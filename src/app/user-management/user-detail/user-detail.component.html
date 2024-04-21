@@ -1,0 +1,42 @@
+<ng-container contentWrapper>
+    <div class="detailForm-main" fxLayout="row">
+        <div class="leftMenu" fxFlex="33">
+            <div class="menuDetail p-20">
+                <div>
+                    <p class="title">address | async</p>
+                    <p class="bold mat-primary-text-color value">{{this.connectedAccount}}</p>
+                    <p class="title">Full name</p>
+                    <p class="bold mat-primary-text-color value">name | async</p>
+                    <span class="example-list-section">
+                        <mat-checkbox class="example-margin" [checked]="true" disabled="true">
+                        </mat-checkbox>
+                    </span>
+
+                </div>
+            </div>
+            <div class="menuList">
+                <ng-container>
+                    <mat-card class="Card subMenuCard m-b-2" routerLink="basic-information" routerLinkActive="active"
+                        ariaCurrentWhenActive="page" queryParamsHandling="preserve">
+                        <mat-card-content>Basic information</mat-card-content>
+                    </mat-card>
+                </ng-container>
+                <ng-container>
+                    <mat-card class="Card subMenuCard m-b-2" routerLink="employee-detail" routerLinkActive="active"
+                        ariaCurrentWhenActive="page" queryParamsHandling="preserve">
+                        <mat-card-content>Employee detail</mat-card-content>
+                    </mat-card>
+                </ng-container>
+                <ng-container>
+                    <mat-card class="Card subMenuCard m-b-2" routerLink="document" routerLinkActive="active"
+                        ariaCurrentWhenActive="page" queryParamsHandling="preserve">
+                        <mat-card-content>Document upload</mat-card-content>
+                    </mat-card>
+                </ng-container>
+            </div>
+        </div>
+        <div class="detailForm-content" fxFlex="66" class="p-20">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</ng-container>

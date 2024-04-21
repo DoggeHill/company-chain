@@ -1,0 +1,58 @@
+<div class="detailForm-header" fxLayout="row" fxLayoutAlign="space-between"
+  [ngClass]="(formGroup?.enabled)? 'detailForm-edit-header' : ''">
+  <h1>Employee detail</h1>
+  <div class="action">
+    <button *ngIf="!formGroup?.enabled" mat-raised-button (click)="edit()">Edit</button>
+    <ng-container *ngIf="formGroup?.enabled">
+      <button class="m-l-20" (click)="save()" mat-raised-button color="primary">Save</button>
+      <button class="m-l-20" mat-raised-button (click)="cancel()">Cancel</button>
+    </ng-container>
+  </div>
+</div>
+<mat-divider></mat-divider>
+
+<div class="detailForm-body" *ngIf="formGroup" [formGroup]="formGroup"
+  [ngClass]="(formGroup?.enabled)? 'detailForm-edit-body' : ''">
+  <ng-container [formGroup]="formGroup" [formGroupName]="'token'" class="m-b-20">
+    <h2 class="m-t-20">Tokens</h2>
+    <div fxLayout="row" fxLayoutGap="2%">
+      <div class="detailForm-formBox" fxFlex="50%">
+        <div class="detailForm-item">
+          <mat-checkbox class="example-margin" formControlName="access">
+            Access
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <mat-divider></mat-divider>
+  <ng-container [formGroup]="formGroup" [formGroupName]="'department'" class="m-b-20">
+    <h2 class="m-t-20">Employee detail</h2>
+    <div fxLayout="row" fxLayoutGap="2%">
+      <div class="detailForm-formBox" fxFlex="50%">
+        <div class="detailForm-item">
+          <mat-form-field>
+            <mat-label>Office</mat-label>
+            <mat-select formControlName="officeId">
+              @for (ofc of offices; track ofc) {
+              <mat-option [value]="ofc.id">{{ofc.name}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="detailForm-formBox" fxFlex="50%">
+        <div class="detailForm-item">
+          <mat-form-field>
+            <mat-label>Department</mat-label>
+            <mat-select formControlName="departmentId">
+              @for (dep of departments; track dep) {
+              <mat-option [value]="dep.id">{{dep.field}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

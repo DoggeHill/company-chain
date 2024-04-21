@@ -1,0 +1,24 @@
+// User defined styles
+
+mat-form-field {
+    width: 100%;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.bold {
+    font-weight: bold;
+}
+.title {
+    color: #3f51b5;
+}
+.active {
+    background-color: #3f51b5 !important;
+}
+// default html upload file
+.file-input {
+    display: none;
+  }
+
+#drawer {width: 250px;}

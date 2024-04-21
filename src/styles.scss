@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
+// Ag grid
+/* Core Grid CSS */
+@import 'ag-grid-community/styles/ag-grid.css';
+/* Quartz Theme Specific CSS */
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
+
+// Layout helpers
+@import 'app/css/layout-helpers.scss';
+
+// Custom user-defined styles
+@import 'app/css/custom-styles.scss';

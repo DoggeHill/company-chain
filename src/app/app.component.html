@@ -1,0 +1,48 @@
+<!-- full window startup loader -->
+<app-startup></app-startup>
+
+<mat-drawer-container class="drawer-container" autosize>
+  <mat-drawer #drawer id="drawer" mode="side" opened="false">
+    <div *ngIf="isLoaded | async" class="navigation__first">
+      <mat-icon mat-list-icon>person</mat-icon>
+      <h3 mat-link>user_name</h3>
+      <span class="address" mat-link>{{metamask.getConnectedAccount()}}</span>
+      <!-- <h4 mat-link>{{metamask.getBalance(metamask.getConnectedAccount())}}</h4> -->
+      <!---  <h4 mat-link>{{metamask.getInfo()}}</h4> -->
+    </div>
+    <mat-nav-list class="navigation">
+      @for (link of links; track link) {
+      <mat-list-item class="navigation__nav-card" routerLink={{link.href}} (click)="drawer.toggle()">
+        <mat-icon mat-list-icon>{{link.icon}}</mat-icon>
+        <h4 mat-link>{{link.name}}</h4>
+      </mat-list-item>
+      }
+    </mat-nav-list>
+  </mat-drawer>
+
+  <div class="sidenav-content">
+    <p>
+      <mat-toolbar id="toolbar">
+        <button mat-icon-button class="example-icon" (click)="drawer.toggle()"
+          aria-label="Example icon-button with menu ico">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>Company chain</span>
+        <span class="example-spacer"></span>
+        <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+          <mat-icon>favorite</mat-icon>
+        </button>
+        <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+          <mat-icon>share</mat-icon>
+        </button>
+      </mat-toolbar>
+    </p>
+    <div class="app-content" *ngIf="isLoaded | async">
+      <div class="router-wrapper">
+        <div id="main_content" class="m-30">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-drawer-container>

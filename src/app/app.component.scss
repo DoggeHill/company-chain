@@ -1,0 +1,75 @@
+#toolbar {
+    background: #2196f3;
+    color: #dff;
+}
+
+.drawer-container {
+    height: 100vh;
+}
+
+.sidenav-content {
+    height: 100%;
+    position: relative;
+}
+
+.app-content,
+.router-wrapper {
+    height: 100%;
+    position: relative;
+}
+
+#main_content {
+    height: 100%;
+}
+
+::ng-deep {
+    mat-list-item.mat-mdc-list-item {
+        padding: 2rem 2.2rem;
+    }
+    .navigation {
+        &__first {
+            border-bottom: 1px solid grey;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 3rem;
+            mat-icon {
+                font-size: 4rem;
+                height: auto;
+                width: 60px;
+                color: tomato;
+            }
+            h3 {
+                margin-bottom: 5px;
+                font-size: 1.25rem;
+
+                &:last-child {
+                    margin-bottom: 2rem;
+                }
+            }
+            .address {
+                font-size: 8px;
+            }
+            margin-bottom: 3rem;
+        }
+
+        &__nav-card {
+            span {
+                display: flex;
+                flex-grow: 1;
+                justify-content: space-between;
+                align-items: center;
+                h4 {
+                    font-size: 1.2rem;
+                    margin-bottom: 0;
+                }
+                mat-icon {
+                    width: 2rem;
+                    font-size: 1.7rem;
+                    height: auto;
+                }
+            }
+        }
+    }
+}

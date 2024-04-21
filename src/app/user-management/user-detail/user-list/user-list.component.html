@@ -1,0 +1,22 @@
+<mat-card-header>
+  <h1>User list component</h1>
+  <div class="button-container">
+    <button mat-fab color="primary" aria-label="Add new user" (click)="addUser()">
+      <mat-icon>playlist_add</mat-icon>
+    </button>
+  </div>
+</mat-card-header>
+<ag-grid-angular 
+  style="width: 100%; height: 80%;"
+  [rowData]="rowData"
+  [columnDefs]="colDefs"
+  [defaultColDef]="defaultColDef"
+  [rowSelection]="'single'"
+  (rowDoubleClicked)="rowDoubleClicked()"
+  (selectionChanged)="onSelectionChanged($event)"
+  [pagination]="true"
+  [paginationPageSize]="paginationPageSize"
+  [paginationPageSizeSelector]="paginationPageSizeSelector"
+  [class]="themeClass"
+  (gridReady)="onGridReady($event)"
+></ag-grid-angular>

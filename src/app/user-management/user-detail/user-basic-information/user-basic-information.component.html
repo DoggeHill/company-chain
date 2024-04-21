@@ -1,0 +1,136 @@
+<div class="detailForm-header" fxLayout="row" fxLayoutAlign="space-between"
+    [ngClass]="(formGroup?.enabled)? 'detailForm-edit-header' : ''">
+    <h1>User basic information</h1>
+    <div class="action">
+        <button *ngIf="!formGroup?.enabled" mat-raised-button (click)="edit()">Edit</button>
+        <ng-container *ngIf="formGroup?.enabled">
+            <button class="m-l-20" (click)="save()" mat-raised-button color="primary">Save</button>
+            <button class="m-l-20" (click)="delete()" mat-raised-button color="accent">Delete</button>
+            <button class="m-l-20" mat-raised-button (click)="cancel()">Cancel</button>
+        </ng-container>
+    </div>
+</div>
+<mat-divider></mat-divider>
+
+<div class="detailForm-body" *ngIf="formGroup" [formGroup]="formGroup"
+    [ngClass]="(formGroup?.enabled)? 'detailForm-edit-body' : ''">
+    <ng-container [formGroup]="formGroup" [formGroupName]="'personalDetail'" class="m-b-20">
+        <h2 class="m-t-20">Address</h2>
+        <div fxLayout="row" fxLayoutGap="2%">
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>WEB3 Address:</mat-label>
+                        <input matInput formControlName="address" required />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <h2 class="m-t-20">Basic information</h2>
+        <div fxLayout="row" fxLayoutGap="2%">
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>First name:</mat-label>
+                        <input matInput formControlName="firstName" required />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>Last name:</mat-label>
+                        <input matInput formControlName="lastName" required />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="2%">
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field>
+                        <mat-label>Date of birth</mat-label>
+                        <input type="text" formControlName="birthDay" required matInput [matDatepicker]="picker">
+                        <mat-hint>DD/MM/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker [panelClass]="['commonListsModule']" [dateClass]="dateClass"
+                            #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field>
+                        <mat-label>Sex</mat-label>
+                        <mat-select formControlName="sex">
+                            <mat-option [value]="1">Male</mat-option>
+                            <mat-option [value]="2">Female</mat-option>
+                            <mat-option [value]="-1">Unknown</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container [formGroup]="formGroup" [formGroupName]="'address'">
+        <h2 class="m-t-20">Address</h2>
+        <div fxLayout="row" fxLayoutGap="2%">
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>Country</mat-label>
+                        <input matInput formControlName="country" required />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>City</mat-label>
+                        <input matInput formControlName="city" required />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div fxLayout="row" fxLayoutGap="2%">
+            <div class="detailForm-formBox" fxFlex="50%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>Street name</mat-label>
+                        <input matInput formControlName="street" required />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="detailForm-formBox" fxFlex="25%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>Street number</mat-label>
+                        <input matInput formControlName="streetNo" required />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="detailForm-formBox" fxFlex="25%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>Zip code</mat-label>
+                        <input matInput formControlName="zipCode" required />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container [formGroup]="formGroup" [formGroupName]="'personalDetail'">
+        <h2 class="m-t-20">Miscs</h2>
+        <div fxLayout="row" fxLayoutGap="2%">
+            <div class="detailForm-formBox" fxFlex="100%">
+                <div class="detailForm-item">
+                    <mat-form-field class="detailForm-item">
+                        <mat-label y-form-field-info>Notes</mat-label>
+                        <textarea formControlName="notes"  matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2"
+                            cdkAutosizeMaxRows="5"></textarea>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>

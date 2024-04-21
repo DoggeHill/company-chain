@@ -1,0 +1,39 @@
+<div class="detailForm-header" fxLayout="row" fxLayoutAlign="space-between"
+    [ngClass]="(formGroup?.enabled)? 'detailForm-edit-header' : ''">
+    <h1>Document</h1>
+    <div class="action">
+        <button *ngIf="!formGroup?.enabled" mat-raised-button (click)="edit()">Edit</button>
+        <ng-container *ngIf="formGroup?.enabled">
+            <button class="m-l-20" (click)="save()" mat-raised-button color="primary">Save</button>
+            <button class="m-l-20" (click)="delete()" mat-raised-button color="accent">Delete</button>
+            <button class="m-l-20" mat-raised-button (click)="cancel()">Cancel</button>
+        </ng-container>
+    </div>
+</div>
+<mat-divider></mat-divider>
+
+
+<ag-grid-angular 
+    #documentGrid 
+    class="ag-theme-quartz" 
+    style="height: 400px;" 
+    [columnDefs]="colDefs"
+    rowSelection="single" 
+
+    [rowData]="rowData">
+</ag-grid-angular>
+
+<div class="detailForm-body m-t-20" *ngIf="formGroup" [formGroup]="formGroup"
+    [ngClass]="(formGroup?.enabled)? 'detailForm-edit-body' : ''">
+
+    <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
+
+    <div class="file-upload" fxLayout="row" fxLayoutGap="2%">
+        <p class="file-upload p-r-20">
+            {{fileName || "No file uploaded yet."}}
+        </p>
+        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
+            <mat-icon>attach_file</mat-icon>
+        </button>
+    </div>
+</div>

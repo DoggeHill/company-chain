@@ -1,0 +1,63 @@
+#dashboard {
+  display: flex;
+  flex-direction: column;
+  background: #cfd8dc;
+  height: 100vh;
+}
+
+.dash__controls {
+  display: flex;
+  justify-content: flex-end;
+  border: 1px solid black;
+  padding: 1rem;
+}
+
+.dash-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem;
+}
+.dash-row + .dash-row {
+  margin: 0rem 1rem;
+}
+.dash-row .mat-card {
+  flex: 1;
+  min-width: 200px;
+  min-height: 250px;
+  margin: 1rem;
+}
+
+.mat-mdc-card {
+  position: relative;
+  flex-grow: 1;
+  margin: 10px;
+  min-height: 300px;
+  padding: 15px;
+}
+
+.mat-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.2rem;
+}
+
+#card-0-1 {
+  background: #ffc107;
+}
+
+#card-0-2 {
+  background: #eee;
+}
+
+#card-1-1 {
+  background: #2196f3;
+}
+
+/* Material manual overrides */
+
+.mat-fab.mat-primary,
+.mat-flat-button.mat-primary,
+.mat-mini-fab.mat-primary,
+.mat-raised-button.mat-primary {
+  background: #2196f3;
+}
