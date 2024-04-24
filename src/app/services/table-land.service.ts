@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Database } from "@tableland/sdk";
 import { Wallet, getDefaultProvider } from "ethers";
 import { environment } from '../../environments/environment';
+import { TableLandCredentials } from "../shared/tableland-credentials";
 
 // Create a database connection
 interface TableSchema {
@@ -18,16 +19,15 @@ export class TableLandService {
     }
 
     async connect() {
-        const privateKey = environment.TABLELAND_PRIVATE_KEY;
+        const privateKey = TableLandCredentials.TABLELAND_PRIVATE_KEY;
         const wallet = new Wallet(privateKey);
-        // To avoid connecting to the browser wallet (locally, port 8545).
-        // For example: "https://polygon-mumbai.g.alchemy.com/v2/YOUR_ALCHEMY_KEY"
-        const provider = getDefaultProvider("http://127.0.0.1:8545");
+        const provider = getDefaultProvider(TableLandCredentials.TABLELAND_PROVIDER);
         const signer = wallet.connect(provider);
 
         const db: Database<TableSchema> = new Database({ signer });
         window.db = db;
         console.info('tableland init', 'TableLand service has been initialized!');
+        return true;
     }
 
     async factory() {
@@ -37,6 +37,7 @@ export class TableLandService {
         await this.departmentFactory().catch((er) => console.error(er));
         await this.officeFactory().catch((er) => console.error(er));
         console.log("Tableland factory done");
+        return true;
     }
 
     async userFactory() {

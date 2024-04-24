@@ -1,0 +1,28 @@
+#startUp {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at 18.7% 37.8%, rgb(250, 250, 250) 0%, rgb(225, 234, 238) 90%);
+    z-index: 2;
+
+    .wrapper {
+        position: absolute;
+        display: block;
+        left: 50%;
+        top: 20%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        h2 {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    .error {
+        color: tomato;
+    }
+}

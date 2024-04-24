@@ -1,56 +1,44 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { TableLandService } from './services/table-land.service'
-import { Web3Service } from './services/web3.service';
+import { StartupComponent } from './startup/startup.component';
+import { AfterViewInit, Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { BehaviorSubject } from 'rxjs';
-import UserAccessControl from '../assets/contracts/UserAccessControl.json'
-import { AbiItem } from 'web3-utils'
-import { ContractAddresses } from './shared/contract-addresses';
+import { BehaviorSubject, delay, take } from 'rxjs';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements AfterViewInit {
+  @ViewChild('startup') startupComponent!: StartupComponent;
+
   links = [
     { href: '/', name: 'Dashboard', isActive: true, icon: 'assignment' },
     { href: 'user-list', name: 'User list', isActive: true, icon: 'person' },
   ];
-  isLoaded = new BehaviorSubject(false);
+  isLoading = new BehaviorSubject(true);
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: any,
-    public metamask: Web3Service,
-    private tableLandService: TableLandService,
-  ) { }
-
-  ngOnInit(): void {
-    const connectWeb3 = async () => {
-      const data = await this.metamask.connectMetamask();
-      //   const factory = await this.tableLandService.factory();
-      const db = this.tableLandService.connect();
-      return data;
-    };
-    connectWeb3().then(() => {
-      this.isLoaded.next(true);
-      //this.resetRoles();
-    });
-    this.tableLandService.connect();
-    
+  constructor(@Inject(PLATFORM_ID) private platformId: any, private router: Router, private snackBar: MatSnackBar) {
+    this.onActivate();
   }
 
-  // admin grant access to himself
-  resetRoles() {
-    const contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.userAccessControlContractAddress);
-    const refreshTickets = async () => {
-        await contract.methods.grantMinterRole(this.metamask.getConnectedAccount()).send({from: this.metamask.getConnectedAccount()});
-    };
-    refreshTickets().then((res) => {
-      console.log(res);
-    }).catch((e) => console.log(e));
+  ngAfterViewInit(): void {
+    this.startupComponent
+      .init()
+      .pipe(take(1), delay(400))
+      .subscribe((res) => {
+        if (res) {
+          this.isLoading.next(false);
+          this.snackBar.open('All set!', 'Close', {
+            duration: 2000, // Set the duration in milliseconds
+          });
+        } else {
+          window.location.href = 'https://sk.wikipedia.org/wiki/Chyba';
+        }
+      });
   }
-  
+
   onActivate() {
     if (isPlatformBrowser(this.platformId)) {
       window.scrollTo(0, 0);

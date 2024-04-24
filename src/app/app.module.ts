@@ -20,6 +20,10 @@ import {
   NgxMatDateFormats,
 } from '@angular-material-components/datetime-picker';
 import { StartupComponent } from './startup/startup.component';
+import { CredentialsDialogComponent } from './startup/credentials-dialog/credentials-dialog.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
 
 registerLocaleData(localeSk, 'sk');
 
@@ -36,13 +40,15 @@ const CUSTOM_DATE_FORMATS: NgxMatDateFormats = {
 };
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, StartupComponent],
+  declarations: [AppComponent, DashboardComponent, StartupComponent, CredentialsDialogComponent],
   imports: [
     UserModule,
     AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
     MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot(reducers, { metaReducers }),
   ],

@@ -1,27 +1,38 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 // IPFS Client
 import pinataSDK from '@pinata/sdk';
 import { ContractAddresses } from '../shared/contract-addresses';
 // Smart contracts
 import { AbiItem } from 'web3-utils';
 import IpfsContract from '../../assets/contracts/FileStorage.json';
+import { PinataCredentials } from '../shared/pinata-credentials';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IpfsService {
   ipfs: any = undefined;
-  pinata: pinataSDK;
+  pinata: pinataSDK | undefined;
 
-  constructor() {
-    this.pinata = new pinataSDK(environment.PINATA_API_KEY, environment.PINATA_API_SECRET);
-    this.pinata
-      .testAuthentication()
-      .then((result: any) => {
-        console.info(result, 'Pinata authenticated, IPFS available');
-      })
-      .catch((error: any) => console.error(error));
+  constructor(private http: HttpClient) {
+    // If service is used before APP initialization
+    if(PinataCredentials.PINATA_API_KEY == '') return;
+    this.connect();
+  }
+
+  connect() {
+    this.pinata = new pinataSDK(PinataCredentials.PINATA_API_KEY, PinataCredentials.PINATA_SECRET);
+  }
+
+  async testConnection(){
+    return this.pinata!.testAuthentication();
+  } 
+  
+  // Download configuration file
+  downloadJSONfile(cid: string): Observable<Object> {
+    return this.http.get('https://gateway.pinata.cloud/ipfs/' + cid);
   }
 
   async fileToReadableStream(file: File): Promise<ReadableStream<Uint8Array>> {
@@ -62,11 +73,12 @@ export class IpfsService {
     });
     formData.append('pinataOptions', pinataOptions);
 
+    // Angular http
     try {
       const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
         method: 'POST',
         headers: {
-          Authorization: 'Bearer ' + environment.PINATA_API_JWT,
+          Authorization: 'Bearer ' + PinataCredentials.PINATA_JWT,
         },
         body: formData,
       });
@@ -83,7 +95,7 @@ export class IpfsService {
 
   async pinFileToEth(cid: string, address: string) {
     console.info('pinning to etherum');
-    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.ipfs_contract);
+    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
     const saveFile = async () => {
       const res = await contract.methods.storeCIDAndUserAddress(cid, address).send({ from: address });
       console.log(res);
@@ -91,7 +103,7 @@ export class IpfsService {
     saveFile();
   }
 
-  async listDocuments() { 
-    this.pinata.pinList({});
+  async listDocuments() {
+    this.pinata!.pinList({});
   }
 }

@@ -1,12 +1,12 @@
 <!-- full window startup loader -->
-<app-startup></app-startup>
+<app-startup #startup *ngIf="isLoading | async"></app-startup>
 
 <mat-drawer-container class="drawer-container" autosize>
   <mat-drawer #drawer id="drawer" mode="side" opened="false">
-    <div *ngIf="isLoaded | async" class="navigation__first">
+    <div *ngIf="!(isLoading | async)" class="navigation__first">
       <mat-icon mat-list-icon>person</mat-icon>
       <h3 mat-link>user_name</h3>
-      <span class="address" mat-link>{{metamask.getConnectedAccount()}}</span>
+      <!-- <span class="address" mat-link>{{metamask.getConnectedAccount()}}</span> -->
       <!-- <h4 mat-link>{{metamask.getBalance(metamask.getConnectedAccount())}}</h4> -->
       <!---  <h4 mat-link>{{metamask.getInfo()}}</h4> -->
     </div>
@@ -37,7 +37,7 @@
         </button>
       </mat-toolbar>
     </p>
-    <div class="app-content" *ngIf="isLoaded | async">
+    <div class="app-content" *ngIf="!(isLoading | async)">
       <div class="router-wrapper">
         <div id="main_content" class="m-30">
           <router-outlet></router-outlet>

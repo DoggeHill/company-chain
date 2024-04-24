@@ -37,7 +37,7 @@ export class EmployeeDetailComponent {
     private registers: RegisterService,
     private metamaskService: Web3Service,
   ) {
-    this.contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.userAccessControlContractAddress);
+    this.contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.USER_ACCESS_CONTRACT);
 
     combineLatest([
       registers.listDepartments(),

@@ -48,24 +48,28 @@ export class Web3Service {
   }
 
   async connectMetamask() {
-    //check metamask is installed
-    if (window.ethereum) {
-      //await window.ethereum.request({ method: 'eth_requestAccounts' });
-      window.web3 = new Web3(window.ethereum);
-      // instantiate Web3 with the injected provider
-      const web3 = window.web3;
-      window.loaded = true;
-      //request user to connect accounts (Metamask will prompt)
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    try {
+      //check metamask is installed
+      if (window.ethereum) {
+        //await window.ethereum.request({ method: 'eth_requestAccounts' });
+        window.web3 = new Web3(window.ethereum);
+        // instantiate Web3 with the injected provider
+        const web3 = window.web3;
+        window.loaded = true;
+        //request user to connect accounts (Metamask will prompt)
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-      //get the connected accounts
-      const accounts = await web3.eth.getAccounts();
+        //get the connected accounts
+        const accounts = await web3.eth.getAccounts();
 
-      //show the first connected account in the react page
-      this._connectedAccount = accounts[0];
-      console.info(this._connectedAccount, 'Metamask account');
-    } else {
-      alert('Please download metamask');
+        //show the first connected account in the react page
+        this._connectedAccount = accounts[0];
+        console.info(this._connectedAccount, 'Metamask account');
+      } else {
+        alert('Please download metamask');
+      }
+    } catch(err) {
+      console.error(err);
     }
   }
 
@@ -74,7 +78,7 @@ export class Web3Service {
    * @returns
    */
   async isMetamaskUnlocked() {
-    return of((window as any).ethereum._metamask.isUnlocked());
+    return (window as any).ethereum._metamask.isUnlocked();
   }
 
   /**
@@ -82,6 +86,6 @@ export class Web3Service {
    * @returns
    */
   async isBlockchainConnected() {
-    return of((window as any).ethereum.isConnected());
+    return (window as any).ethereum.isConnected();
   }
 }

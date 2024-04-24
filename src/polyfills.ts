@@ -15,5 +15,6 @@ declare global {
       web3?: any,
       db?: any,
       loaded?: boolean,
+      indexedDB?: any,
    }
 }
