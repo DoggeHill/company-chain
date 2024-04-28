@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Database } from "@tableland/sdk";
 import { Wallet, getDefaultProvider } from "ethers";
-import { environment } from '../../environments/environment';
 import { TableLandCredentials } from "../shared/tableland-credentials";
 
 // Create a database connection

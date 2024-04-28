@@ -1,34 +1,29 @@
 import { Injectable } from '@angular/core';
 // IPFS Client
-import pinataSDK from '@pinata/sdk';
+//import pinataSDK from '@pinata/sdk';
 import { ContractAddresses } from '../shared/contract-addresses';
 // Smart contracts
 import { AbiItem } from 'web3-utils';
 import IpfsContract from '../../assets/contracts/FileStorage.json';
 import { PinataCredentials } from '../shared/pinata-credentials';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IpfsService {
-  ipfs: any = undefined;
-  pinata: pinataSDK | undefined;
 
   constructor(private http: HttpClient) {
-    // If service is used before APP initialization
-    if(PinataCredentials.PINATA_API_KEY == '') return;
-    this.connect();
   }
 
-  connect() {
-    this.pinata = new pinataSDK(PinataCredentials.PINATA_API_KEY, PinataCredentials.PINATA_SECRET);
+  testConnection() : Observable<{message: string}>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${PinataCredentials.PINATA_JWT}`
+    })
+    return this.http.get<{message: string}>('https://api.pinata.cloud/data/testAuthentication', {headers : headers});
   }
-
-  async testConnection(){
-    return this.pinata!.testAuthentication();
-  } 
   
   // Download configuration file
   downloadJSONfile(cid: string): Observable<Object> {
@@ -104,6 +99,6 @@ export class IpfsService {
   }
 
   async listDocuments() {
-    this.pinata!.pinList({});
+    //this.pinata!.pinList({});
   }
 }

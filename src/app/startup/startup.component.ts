@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Web3Service } from '../services/web3.service';
 import { Observable, Subject, concat, concatMap, delay, filter, from, mergeMap, of, switchMap, take, takeUntil, tap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,7 +13,7 @@ import { TableSchema } from '../user-management/model/table-schema';
 import UserAccessControl from '../../assets/contracts/UserAccessControl.json'
 import { AbiItem } from 'web3-utils'
 import { Config } from '../shared/config';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { TableLandCredentials } from '../shared/tableland-credentials';
 
 enum Steps {
   "config_loaded" = 0,
@@ -41,11 +41,11 @@ enum Errors {
   templateUrl: './startup.component.html',
   styleUrl: './startup.component.scss',
 })
-export class StartupComponent implements OnInit {
+export class StartupComponent implements OnDestroy {
    readonly _databaseName = "company-chain-config-db";
    readonly _storeName = "credentials";
    private _pinataConfigCid: string | null = null;
-   public _dialogResult = new Subject<boolean>();
+   private _dialogResult = new Subject<boolean>();
 
   progressBarValue :number = 0;
   class: string = '';
@@ -116,7 +116,9 @@ export class StartupComponent implements OnInit {
       },
     ];  
 
-  constructor(private metamaskService: Web3Service, public dialog: MatDialog,
+  constructor(
+    public dialog: MatDialog,
+    private metamaskService: Web3Service, 
     private ipfsService: IpfsService, 
     private tableLandService: TableLandService,
   ) {
@@ -166,10 +168,9 @@ export class StartupComponent implements OnInit {
                   throw("MetamaskNotConnectedToBlockchain");
                 }
                 this.progress(Steps.blockchain_connected);
-                this.ipfsService.connect();
                 
-                return from(this.ipfsService.testConnection()).pipe(takeUntil(this.destroy$), delay(200), switchMap(res => {
-                  if(!res?.authenticated) {
+                return this.ipfsService.testConnection().pipe(takeUntil(this.destroy$), delay(200), switchMap((res: {message: string}) => {
+                  if(!res?.message) {
                     this.error(Errors.ipfs_not_connected);
                     throw("IPFSProviderNotAuthenticated");
                   }
@@ -199,32 +200,53 @@ export class StartupComponent implements OnInit {
       }));
     }));
   }
-  
-  
-  ngOnInit(): void {
-    
-  }
-
+ 
   private loadConfigJson(): Observable<any> {
-    return from(this.checkPinataStoreName(this._storeName)).pipe(takeUntil(this.destroy$), switchMap((res, index) => {
-      this.openCredentialsDialog();
-      return this._dialogResult.pipe(takeUntil(this.destroy$), switchMap((res) => {
-        return from(this.insertPinataCredentials(this._storeName)).pipe(
-          takeUntil(this.destroy$), 
-          switchMap((res) => {
-            return from(this.ipfsService.downloadJSONfile(this._pinataConfigCid!)).pipe(
-              takeUntil(this.destroy$), 
-              tap((res) => {
-                this.setLocalConfigurations(res as Config);
-                console.log(res);
-              }),
-            );
-          },
-        ));
-      }));
-    }))
-  } 
-
+    return from(this.checkPinataStoreName(this._storeName)).pipe(
+      takeUntil(this.destroy$),
+      switchMap((storeNameExists) => {
+        if (storeNameExists) {
+          return this.getConfigFromDbAndDownload();
+        } else {
+          this.openCredentialsDialog();
+          return this.handleDialogResult();
+        }
+      })
+    );
+  }
+  
+  private getConfigFromDbAndDownload(): Observable<any> {
+    return from(this.configFromDb()).pipe(
+      tap(value => {this._pinataConfigCid = value;}),
+      switchMap((dbConfig) => this.downloadConfigFromIpfs())
+    );
+  }
+  
+  private downloadConfigFromIpfs(): Observable<any> {
+    return from(this.ipfsService.downloadJSONfile(this._pinataConfigCid!)).pipe(
+      takeUntil(this.destroy$),
+      tap((config) => {
+        this.setLocalConfigurations(config as Config);
+        console.log(config);
+      })
+    );
+  }
+  
+  private handleDialogResult(): Observable<any> {
+    return this._dialogResult.pipe(
+      takeUntil(this.destroy$),
+      switchMap((dialogResult) => {
+        return this.insertCredentialsAndDownloadConfig();
+      })
+    );
+  }
+  
+  private insertCredentialsAndDownloadConfig(): Observable<any> {
+    return from(this.insertPinataCredentials(this._storeName)).pipe(
+      takeUntil(this.destroy$),
+      switchMap(() => this.downloadConfigFromIpfs())
+    );
+  }
 
   async checkPinataStoreName(storeName: string): Promise<boolean> {
     try {
@@ -246,7 +268,7 @@ export class StartupComponent implements OnInit {
       },
     });
     
-   // (await dbPromise).put(storeName, 'cid', this._pinataConfigCid!);
+    (await dbPromise).put(storeName, this._pinataConfigCid!, 'cid');
     (await dbPromise).close
   }
 
@@ -263,34 +285,18 @@ export class StartupComponent implements OnInit {
     });
   }
 
-  private config() {
-    const connectWeb3 = async () => {
-      const data = await this.metamaskService.connectMetamask();
-    // const factory = await this.tableLandService.factory();
-     
-      
-
-      // TODO: history tab
-      const eventBus = new helpers.TableEventBus(window.db.config);
-      const listener = await eventBus.addListener(TableSchema.user); // Replace with your table name
-      listener.on("change", function (event: any) {
-        console.warn("Transfer: ", event);
-      });
-      
-      
-      return data;
-    };
-    connectWeb3().then(() => {
-      //this.isLoaded.next(true);
-      //this.resetRoles();
-    });
-    this.tableLandService.connect();
+  private async configFromDb() {
+    const db = await openDB(this._databaseName); 
+    return db.transaction(this._storeName).objectStore(this._storeName).get('cid'); 
   }
 
-  private setLocalConfigurations(res: Config) {
+  private setLocalConfigurations(res: Config): void {
     PinataCredentials.PINATA_API_KEY = res.PINATA_API_KEY;
     PinataCredentials.PINATA_JWT = res.PINATA_API_JWT;
     PinataCredentials.PINATA_SECRET = res.PINATA_API_SECRET;
+
+    TableLandCredentials.TABLELAND_PRIVATE_KEY = res.TABLELAND_PRIVATE_KEY;
+    TableLandCredentials.TABLELAND_PROVIDER = res.TABLELAND_PROVIDER;
 
     ContractAddresses.IPFS_CONTRACT = res.FILE_STORAGE_CONTRACT_ADDRESS;
     ContractAddresses.USER_ACCESS_CONTRACT = res.USER_ACCESS_CONTROL_CONTRACT_ADDRESS;
@@ -308,5 +314,11 @@ export class StartupComponent implements OnInit {
     refreshTickets().then((res) => {
       console.log(res);
     }).catch((e) => console.log(e));
+  }
+
+
+  ngOnDestroy() {
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 }
