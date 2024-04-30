@@ -3,15 +3,9 @@
     <h1>Document</h1>
     <div class="action">
         <button *ngIf="!formGroup?.enabled" mat-raised-button (click)="edit()">Edit</button>
-        <ng-container *ngIf="formGroup?.enabled">
-            <button class="m-l-20" (click)="save()" mat-raised-button color="primary">Save</button>
-            <button class="m-l-20" (click)="delete()" mat-raised-button color="accent">Delete</button>
-            <button class="m-l-20" mat-raised-button (click)="cancel()">Cancel</button>
-        </ng-container>
     </div>
 </div>
 <mat-divider></mat-divider>
-
 
 <ag-grid-angular 
     #documentGrid 

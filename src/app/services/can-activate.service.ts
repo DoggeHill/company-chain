@@ -20,12 +20,12 @@ export class AuthGuard implements CanActivate {
     }
 
     getPermission(): Observable<boolean> {
+        if(window.web3 == undefined || window.web3.eth == undefined) return of(false);
         const contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.USER_ACCESS_CONTRACT);
 
-        return from(contract.methods.isMinter().send({from: this.metamaskService.getConnectedAccount()})).pipe(
+        return from(contract.methods.isMinter().call()).pipe(
             delay(2000),
             map((res) => {
-                console.log(res);
                 return this.isAuthorized;
             })
         );

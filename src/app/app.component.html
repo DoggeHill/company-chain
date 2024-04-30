@@ -6,7 +6,7 @@
     <div *ngIf="!(isLoading | async)" class="navigation__first">
       <mat-icon mat-list-icon>person</mat-icon>
       <h3 mat-link>user_name</h3>
-      <!-- <span class="address" mat-link>{{metamask.getConnectedAccount()}}</span> -->
+      <span class="address" mat-link>{{web3Service.getConnectedAccount()}}</span>
       <!-- <h4 mat-link>{{metamask.getBalance(metamask.getConnectedAccount())}}</h4> -->
       <!---  <h4 mat-link>{{metamask.getInfo()}}</h4> -->
     </div>

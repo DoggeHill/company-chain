@@ -11,6 +11,8 @@ import { UserEffect } from "./store/user.effects";
 import { StoreModule } from "@ngrx/store";
 import { appModuleFeatureKey, reducers } from "../store/reducer/app.reducer";
 import { UserIpfsEffects } from "./store/user.ipfs.effects";
+import {MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { HistoryComponent } from './user-detail/history/history.component';
 
 @NgModule({
     declarations: [
@@ -19,8 +21,10 @@ import { UserIpfsEffects } from "./store/user.ipfs.effects";
         UserBasicInformationComponent,
         EmployeeDetailComponent,
         UserDocumentComponent,
+        HistoryComponent,
     ],
     imports: [
+        MatProgressSpinnerModule,
         SharedModule,
         StoreModule.forFeature(appModuleFeatureKey, reducers),
         EffectsModule.forFeature([

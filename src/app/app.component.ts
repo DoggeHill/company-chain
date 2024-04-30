@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, delay, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Web3Service } from './services/web3.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent implements AfterViewInit {
   ];
   isLoading = new BehaviorSubject(true);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: any, private router: Router, private snackBar: MatSnackBar) {
+  constructor(@Inject(PLATFORM_ID) private platformId: any, private router: Router, private snackBar: MatSnackBar, public web3Service: Web3Service) {
     this.onActivate();
   }
 
@@ -33,6 +34,7 @@ export class AppComponent implements AfterViewInit {
           this.snackBar.open('All set!', 'Close', {
             duration: 2000, // Set the duration in milliseconds
           });
+          this.router.navigate(['/']);
         } else {
           window.location.href = 'https://sk.wikipedia.org/wiki/Chyba';
         }

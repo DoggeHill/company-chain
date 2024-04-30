@@ -1,5 +1,6 @@
 import { Component, Inject, Input } from '@angular/core';
-import { MatDialogRef, MatDialogActions, MatDialogContent, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatDialogRef, MatDialogActions, MatDialogContent, MAT_DIALOG_DATA, MatDialogModule, MatDialog, MatDialogTitle, MatDialogClose } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-delete-dialog',
@@ -7,12 +8,14 @@ import { MatDialogRef, MatDialogActions, MatDialogContent, MAT_DIALOG_DATA, MatD
   standalone: true,
   styleUrl: './delete-dialog.scss',
   imports: [
-    MatDialogModule,
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
   ]
 })
 export class DeleteDialog {
-  @Input('fileName') fileName: string = "";
-
   constructor(public dialogRef: MatDialogRef<DeleteDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { filename: string }) { }
 }

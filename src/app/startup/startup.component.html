@@ -1,8 +1,10 @@
 <div id="startUp">
     <div class="wrapper">
         <h2 class="m-b-20" [ngClass]="class" >{{step}}</h2>
-
-        <mat-progress-spinner class="example-margin" [color]="'primary'" [mode]="'determinate'" [value]="progressBarValue">
+        <div class="wrapper__button">
+            <button *ngIf="class == 'error'" mat-raised-button color="warn" (click)="reloadComponent()">Refresh!</button>
+        </div>
+        <mat-progress-spinner class="spinner" [color]="'primary'" [mode]="'determinate'" [value]="progressBarValue">
         </mat-progress-spinner>
     </div>
 </div>

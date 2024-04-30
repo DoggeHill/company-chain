@@ -8,6 +8,7 @@ import IpfsContract from '../../assets/contracts/FileStorage.json';
 import { PinataCredentials } from '../shared/pinata-credentials';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { IpfsFile } from '../user-management/model/ipfs-file';
 
 @Injectable({
   providedIn: 'root',
@@ -81,24 +82,34 @@ export class IpfsService {
       console.log(resData);
 
       // Save hash to ETH
-      this.pinFileToEth(resData.IpfsHash, authorWalletId);
+      this.pinFileToEth(resData.IpfsHash, authorWalletId, address);
     } catch (error) {
       console.error(error);
     }
     return resData;
   }
 
-  async pinFileToEth(cid: string, address: string) {
+  async pinFileToEth(cid: string, authorWalletId: string, address: string) {
     console.info('pinning to etherum');
     const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
     const saveFile = async () => {
-      const res = await contract.methods.storeCIDAndUserAddress(cid, address).send({ from: address });
+      const res = await contract.methods.storeCIDAndUserAddress(cid, address).send({ from: authorWalletId });
       console.log(res);
     };
     saveFile();
   }
 
-  async listDocuments() {
-    //this.pinata!.pinList({});
+  async listUsersDocuments(address: string): Promise<IpfsFile[]> {
+    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
+    return await contract.methods.getUserFiles(address).call();
+  }
+
+  async listAllFiles() {
+    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
+    return await contract.methods.getAllFiles().call();
+  }
+
+  listUsersDocumentsWithMetadata(address: string) {
+
   }
 }

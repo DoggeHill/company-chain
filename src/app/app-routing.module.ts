@@ -16,11 +16,11 @@ const routes: Routes = [
   {
     path: 'user-list',
     component: UserListComponent,
-    canActivate: [AuthGuard],
   },
   {
     path: 'user-detail/:id',
     component: UserDetailComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
@@ -38,6 +38,10 @@ const routes: Routes = [
       {
         path: 'document',
         component: UserDocumentComponent,
+      },
+      {
+        path: 'history',
+        component: History,
       }
     ]
   }

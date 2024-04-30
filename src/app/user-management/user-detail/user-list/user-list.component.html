@@ -1,8 +1,11 @@
 <mat-card-header>
-  <h1>User list component</h1>
-  <div class="button-container">
+  <h1>CompanyChain employees:</h1>
+  <div *ngIf="gridApi && canEdit | async" class="button-container">
     <button mat-fab color="primary" aria-label="Add new user" (click)="addUser()">
       <mat-icon>playlist_add</mat-icon>
+    </button>
+    <button class="m-l-12" mat-fab color="warn" aria-label="Delete user" [disabled]="!gridApi.getSelectedRows().length" (click)="deleteUser()">
+      <mat-icon>delete</mat-icon>
     </button>
   </div>
 </mat-card-header>

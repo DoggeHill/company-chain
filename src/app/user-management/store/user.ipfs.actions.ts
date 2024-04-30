@@ -3,8 +3,7 @@ import { IpfsFile } from "../model/ipfs-file";
 
 export const listDocuments = createAction(
     '[IPFS] List IPFS documents',
-    props<{ address?: string }>()
-
+    props<{ address: string }>()
 );
 
 export const listDocumentSuccess = createAction(
@@ -17,14 +16,14 @@ export const listDocumentFailure = createAction(
     props<{ error: any }>()
 );
 
-export const uploadDocuments = createAction(
+export const uploadDocument = createAction(
     '[IPFS] Upload IPFS documents',
-    props<{ data: IpfsFile[] }>()
+    props<{ file: File, address: string }>()
 );
 
 export const uploadDocumentSuccess = createAction(
     '[IPFS] Upload IPFS documents success',
-    props<{ data: IpfsFile[] }>()
+    props<{ data: File }>()
 );
   
 export const uploadDocumentFailure = createAction(

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, from, map } from 'rxjs';
+import { Observable, from, map, take } from 'rxjs';
 import { ResponseObject } from '../shared/response-object';
 import { Address, User } from './model/user';
 import { create } from '@tableland/sdk/dist/esm/registry/create';
@@ -52,8 +52,8 @@ export class UserService {
 
   findUser(id: number): Observable<ResponseObject<User>> {
     return from(window.db.prepare(`SELECT * from ${TableSchema.user} where id = ${id};`).all()).pipe(
-      map((rows) => {
-        let newRows = rows as unknown as any;
+      map((rows: any) => {
+        let newRows = rows;
         let data = newRows.results[0];
         const responseObject: ResponseObject<User> = {
           responseData: data as User,
@@ -68,8 +68,8 @@ export class UserService {
 
   findEmployee(id: number): Observable<ResponseObject<Employee>> {
     return from(window.db.prepare(`SELECT * from ${TableSchema.employee} where id = ${id};`).all()).pipe(
-      map((rows) => {
-        let newRows = rows as unknown as any;
+      map((rows: any) => {
+        let newRows = rows;
         let data = newRows.results[0];
         const responseObject: ResponseObject<Employee> = {
           responseData: data as Employee,
@@ -82,22 +82,42 @@ export class UserService {
     );
   }
 
-  editUser(user: User): Observable<ResponseObject<User>> {
+  editUser(user: User): Observable<ResponseObject<number>> {
+    return from(
+      window.db
+        .batch([
+          window.db.prepare(`UPDATE ${TableSchema.user} set firstName = '${user.firstName}', lastName = '${user.lastName}', birthDay = '${user.birthDay}', sex = '${user.sex}', notes = '${user.notes}' where id = ${user.id};`),
+          window.db.prepare(`UPDATE ${TableSchema.address} set country = '${user.address?.country}', city = '${user.address?.city}', street = '${user.address?.street}', streetNo = '${user.address?.streetNo}', zipCode = '${user.address?.zipCode}'  where id = ${user.address?.id};`),
+        ])
+    ).pipe(
+      map((result: any) => {
+        const responseObject: ResponseObject<number> = {
+          responseData: user.id,
+          success: result[0].success ? result[0].success : result[0].error,
+          responseMessages: [],
+          responseMessage: 'user edited',
+        };
+        return responseObject;
+      })
+    );
+  }
+
+  deleteUser(user: User): Observable<ResponseObject<number>> {
     return from(
       window.db
         .prepare(
-          `UPDATE ${TableSchema.user} set firstName = '${user.firstName}', lastName = '${user.lastName}', birthDay = '${user.birthDay}', sex = '${user.sex}', notes = '${user.notes}' where id = ${user.id}`
+          `DELETE FROM ${TableSchema.user} where id = ${user.id}; 
+           DELETE FROM ${TableSchema.employee} where id = ${user.employeeId};
+           DELETE FROM ${TableSchema.address} where id = ${user.addressId};`
         )
         .all()
     ).pipe(
-      map((rows) => {
-        let newRows = rows as unknown as any;
-        let data = newRows.results[0];
-        const responseObject: ResponseObject<User> = {
-          responseData: data as User,
-          success: true,
+      map((result: any) => {
+        const responseObject: ResponseObject<number> = {
+          responseData: user.id,
+          success: result.success ? result.success : result.error,
           responseMessages: [],
-          responseMessage: 'user updated',
+          responseMessage: 'user deleted',
         };
         return responseObject;
       })
@@ -121,14 +141,7 @@ export class UserService {
   }
 
   createUser(dto: User): Observable<ResponseObject<User>> {
-    return from(
-      window.db
-        .prepare(
-          `INSERT INTO users_31337_22 (id, name, surname, date_of_birth, sex, addressId) VALUES (?, ?, ?, ?, ?, ?);`
-        )
-        .bind(dto.id, dto.firstName, dto.lastName, dto.birthDay, dto.sex, dto.address)
-        .run()
-    ).pipe(
+    return from(window.db.prepare(`INSERT INTO users_31337_22 (id, name, surname, date_of_birth, sex, addressId) VALUES (?, ?, ?, ?, ?, ?);`).bind(dto.id, dto.firstName, dto.lastName, dto.birthDay, dto.sex, dto.address).run()).pipe(
       map((rows) => {
         let newRows = rows as unknown as any;
         let data = newRows.results[0];
@@ -143,18 +156,14 @@ export class UserService {
     );
   }
 
-  editEmployee(employee: Employee): Observable<ResponseObject<Employee>> {
-    return from(
-      window.db.prepare(`UPDATE ${TableSchema.employee} set officeId = '${employee.officeId}', departmentId = '${employee.departmentId}' where id = ${employee.id}`).all(),
-    ).pipe(
-      map(rows => {
-        let newRows = rows as unknown as any;
-        let data = newRows.results[0];
-        const responseObject: ResponseObject<Employee> = {
-          responseData: data as Employee,
-          success: true,
+  editEmployee(employee: Employee): Observable<ResponseObject<number>> {
+    return from(window.db.prepare(`UPDATE ${TableSchema.employee} set officeId = '${employee.officeId}', departmentId = '${employee.departmentId}' where id = ${employee.id}`).all()).pipe(
+      map((result: any) => {
+        const responseObject: ResponseObject<number> = {
+          responseData: employee.id,
+          success: result.success ? result.success : result.error,
           responseMessages: [],
-          responseMessage: "employee updated",
+          responseMessage: 'user edited',
         };
         return responseObject;
       })

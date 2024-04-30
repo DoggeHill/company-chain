@@ -3,14 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
-import {
-  MatDialog,
-  MatDialogRef,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogTitle,
-  MatDialogContent,
-} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent } from '@angular/material/dialog';
 import { DeleteDialog } from '../../../shared/delete-dialog/delete-dialog';
 import { IpfsService } from '../../../services/ipfs.service';
 import * as Reducer from '../../store/user.reducer';
@@ -27,27 +20,14 @@ import { Subject, takeUntil } from 'rxjs';
 export class UserDocumentComponent {
   @ViewChild('documentGrid') grid!: AgGridAngular;
   formGroup: FormGroup | undefined;
+  address: string = '';
   editMode: boolean = false;
   fileName = '';
   http: any;
   destroy$ = new Subject();
 
-  constructor(
-    private fb: FormBuilder,
-    public dialog: MatDialog,
-    private ipfsService: IpfsService,
-    private store: Store<Reducer.UserState>,
-    private web3Service: Web3Service
-  ) {
+  constructor(private fb: FormBuilder, public dialog: MatDialog, private ipfsService: IpfsService, private store: Store<Reducer.UserState>, private web3Service: Web3Service) {
     this.createFormGroup();
-
-    this.store
-      .select(Selectors.selectUser)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((r) => {
-        console.log(r);
-        this.store.dispatch(Actions.listDocuments({ address: r?.metamaskAddress }));
-      });
   }
 
   edit() {
@@ -84,7 +64,18 @@ export class UserDocumentComponent {
     this.formGroup.disable();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.store
+      .select(Selectors.selectUser)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((r) => {
+        console.log(r);
+        this.address = r!.metamaskAddress;
+        this.ipfsService.listAllFiles().then((res) => console.log(res));
+        this.ipfsService.listUsersDocuments(r!.metamaskAddress).then((res) => console.log(res));
+        this.store.dispatch(Actions.listDocuments({ address: r!.metamaskAddress }));
+      });
+  }
 
   rowData = [
     { type: 'pdf', name: 'Certificate', validFrom: new Date(), valid: true },
@@ -96,10 +87,12 @@ export class UserDocumentComponent {
   colDefs: ColDef[] = [{ field: 'type' }, { field: 'name' }, { field: 'validFrom' }, { field: 'valid' }];
 
   async onFileSelected(event: any) {
+    
     const file: File = event.target.files[0];
     if (file) {
       this.rowData.push({ type: file.type, name: file.name, validFrom: new Date(), valid: true });
       this.grid.api.setGridOption('rowData', this.rowData);
+      this.store.dispatch(Actions.uploadDocument({file: file, address: this.address}));
     }
   }
 

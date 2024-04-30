@@ -14,6 +14,7 @@ import UserAccessControl from '../../assets/contracts/UserAccessControl.json'
 import { AbiItem } from 'web3-utils'
 import { Config } from '../shared/config';
 import { TableLandCredentials } from '../shared/tableland-credentials';
+import { Router } from '@angular/router';
 
 enum Steps {
   "config_loaded" = 0,
@@ -42,8 +43,8 @@ enum Errors {
   styleUrl: './startup.component.scss',
 })
 export class StartupComponent implements OnDestroy {
-   readonly _databaseName = "company-chain-config-db";
-   readonly _storeName = "credentials";
+   private readonly _databaseName = "company-chain-config-db";
+   private readonly _storeName = "credentials";
    private _pinataConfigCid: string | null = null;
    private _dialogResult = new Subject<boolean>();
 
@@ -121,6 +122,7 @@ export class StartupComponent implements OnDestroy {
     private metamaskService: Web3Service, 
     private ipfsService: IpfsService, 
     private tableLandService: TableLandService,
+    private router: Router,
   ) {
   }
 
@@ -183,14 +185,26 @@ export class StartupComponent implements OnDestroy {
                     }
                     this.progress(Steps.tableland_connected);
 
-                    if(this.tableLandFactory) {
+                    if (this.tableLandFactory) {
                       this.progress(Steps.tableland_factory_init);
-                      return from(this.tableLandService.factory()).pipe(takeUntil(this.destroy$), delay(200),tap(res => {
-                        this.progress(Steps.tableland_factory_done);
-                      }));
+                      return from(this.tableLandService.isFactoryDone()).pipe(
+                        switchMap(value => {
+                          if (value) {
+                            return of(true);
+                          } else {
+                            return from(this.tableLandService.factory()).pipe(
+                              takeUntil(this.destroy$),
+                              delay(200),
+                              tap(() => {
+                                this.progress(Steps.tableland_factory_done);
+                              })
+                            );
+                          }
+                        })
+                      );
                     } else {
                       this.progressBarValue = 100;
-                      return of(null);
+                      return of(true);
                     }
                 }));
               }));
@@ -314,6 +328,10 @@ export class StartupComponent implements OnDestroy {
     refreshTickets().then((res) => {
       console.log(res);
     }).catch((e) => console.log(e));
+  }
+
+  reloadComponent(){
+    window.location.reload();
   }
 
 

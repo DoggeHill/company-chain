@@ -24,21 +24,21 @@
     </mat-card>
     <mat-card id="card-0-2">
       <mat-card-title>
-        Budget
+       Configs
       </mat-card-title>
-      <mat-card-subtitle>Percentage of annual spend</mat-card-subtitle>
-     
-
+      <mat-card-subtitle>Downloaded configurations:</mat-card-subtitle>
+      <span>Configuration from: {{cid}}</span>
+      <button class="m-t-30" mat-raised-button color="warn" (click)="deleteIndexDb()">Reload configurations!</button>
+      <span class="m-t-10">Note: To refresh tables you need to restart database servers, since tables cannot be dropped!</span>
     </mat-card>
   </section>
   <section class="dash-row">
     <mat-card style="flex: 2">
       <mat-card-title style="margin-bottom: 1rem">
-        Customers
+        Employees
       </mat-card-title>
-      
-      <!-- TODO: grid -->
-      
+      <mat-card-subtitle>Number of employees:</mat-card-subtitle>
+      <span class="big-number">8</span>
     </mat-card>
     <mat-card id="card-1-1">
       <mat-card-title style="color: white">

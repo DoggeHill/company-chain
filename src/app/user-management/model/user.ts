@@ -14,10 +14,12 @@ export interface User {
 }
 
 export interface Address {
+    id: number;
     street: string; // Street address
+    streetNo: number; // Street building number
     city: string; // City
     state: string; // State or region
-    postalCode: string; // Postal code
+    zipCode: string; // Postal code
     country: string; // Country
 }
 

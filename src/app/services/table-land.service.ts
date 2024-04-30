@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Database } from "@tableland/sdk";
+import { Database, Registry } from "@tableland/sdk";
 import { Wallet, getDefaultProvider } from "ethers";
 import { TableLandCredentials } from "../shared/tableland-credentials";
 
@@ -29,6 +29,11 @@ export class TableLandService {
         return true;
     }
 
+    async isFactoryDone()  {
+        const registry = await Registry.forSigner(window.db.config.signer);
+        return await registry.listTables();
+    }
+
     async factory() {
         await this.userFactory().catch((er) => console.error(er));
         await this.addressFactory().catch((er) => console.error(er));
@@ -51,7 +56,7 @@ export class TableLandService {
 
         const execWrites = await window.db.batch([
             window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(1, "0x4449B512c20BA8eda6a0f1Ec4938Baca2E270439", "Patrik", "Hyll", "08/09/1999", 1, 1, 1, "boss"),
-            window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(2, "0x4449B512c20BA8eda6a0f1Ec4938Baca2E270439", "Ľudovít", "Mitrenga", "08/09/1999", 2, 2, 2, "novy"),
+            window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(2, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "Ľudovít", "Mitrenga", "08/09/1999", 2, 2, 2, "novy"),
             window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(3, "0x4449B512c20BA8eda6a0f1Ec4938Baca2E270439", "Hugo", "Ludvig", "08/09/1999", 2, 3, 3, "employ"),
             window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(4, "0x4449B512c20BA8eda6a0f1Ec4938Baca2E270439", "Emanuel", "Lol", "08/09/1999", 2, 4, 4, ""),
             window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(5, "0x4449B512c20BA8eda6a0f1Ec4938Baca2E270439", "Anna", "Mária", "08/09/1999", 1, 5, 5, "poznámka"),

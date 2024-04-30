@@ -29,3 +29,8 @@ export const selectEmployee = createSelector(
     selectUserModule,
     (state: Reducer.UserState) => state.employee,
 );
+
+export const selectLoading = createSelector(
+    selectUserModule,
+    (state: Reducer.UserState) => state.loading,
+);

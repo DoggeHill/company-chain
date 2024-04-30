@@ -61,7 +61,7 @@ export class UserBasicInformationComponent {
   edit() {
     this.editMode = true;
     this.formGroup?.enable();
-    this.formGroup?.get('personalDetail.address')?.disable();
+    this.formGroup?.get('personalDetail.metamaskAddress')?.disable();
   }
 
   save() {
@@ -78,6 +78,8 @@ export class UserBasicInformationComponent {
     user.address = address;
 
     this.store.dispatch(Actions.editUser({ data: user }));
+    this.editMode = false;
+    this.formGroup?.disable();
   }
 
   delete() {}
@@ -108,7 +110,7 @@ export class UserBasicInformationComponent {
     this.formGroup = this.fb.group({
       personalDetail: this.fb.group({
         id: this.fb.control(null),
-        address: this.fb.control('TODO address', [Validators.required, Validators.maxLength(255)]),
+        metamaskAddress: this.fb.control(null, [Validators.required, Validators.maxLength(255)]),
         firstName: this.fb.control(null, [Validators.required, Validators.maxLength(255)]),
         lastName: this.fb.control(null, [Validators.required, Validators.maxLength(255)]),
         birthDay: this.fb.control(null),
