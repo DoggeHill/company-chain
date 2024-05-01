@@ -42,3 +42,7 @@ Run `truffle test` in *smart-contracts/test* to execute the unit tests via [Moch
 ## Further help
 
 If you need any help feel free to reach me! <patrikhyll@gmail.com>
+
+## Testing
+
+If you want to test smart contract through application, use test migration setup and spin up Ganache. Contract do not need to be deployed at the same network. 

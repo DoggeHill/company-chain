@@ -69,17 +69,17 @@ export class IpfsService {
   }
 
   pinFileToEth(cid: string, authorAddress: string, address: string, fileName: string, uploadDate: string) {
-    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT_LOCAL);
+    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
     return contract.methods.storeCIDAndUserAddress(cid, address, authorAddress, fileName, uploadDate).send({ from: authorAddress });
   }
 
   listUsersDocuments(address: string): Promise<IpfsFile[]> {
-    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT_LOCAL);
+    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
     return contract.methods.getUserFiles(address).call();
   }
 
   listAllFiles() {
-    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT_LOCAL);
+    const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
     return contract.methods.getAllFiles().call();
   }
 }
