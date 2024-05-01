@@ -11,6 +11,7 @@ import * as Actions from '../../store/user.ipfs.actions';
 import * as Selectors from '../../store/user.selectors';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
+import { IpfsFile } from '../../model/ipfs-file';
 
 @Component({
   selector: 'app-user-document',
@@ -25,6 +26,7 @@ export class UserDocumentComponent {
   fileName = '';
   http: any;
   destroy$ = new Subject();
+  public rowData: IpfsFile[] = [];
 
   constructor(private fb: FormBuilder, public dialog: MatDialog, private ipfsService: IpfsService, private store: Store<Reducer.UserState>, private web3Service: Web3Service) {
     this.createFormGroup();
@@ -47,11 +49,9 @@ export class UserDocumentComponent {
 
   delete() {
     let selectedRow: any = this.grid.api.getSelectedRows()[0];
-    this.rowData = this.rowData.filter((e) => e.name !== selectedRow.name);
     let dialogRef = this.dialog.open(DeleteDialog, {
       data: { filename: selectedRow.name },
     });
-    this.grid.api.setGridOption('rowData', this.rowData);
   }
 
   cancel() {
@@ -71,28 +71,32 @@ export class UserDocumentComponent {
       .subscribe((r) => {
         console.log(r);
         this.address = r!.metamaskAddress;
-        this.ipfsService.listAllFiles().then((res) => console.log(res));
-        this.ipfsService.listUsersDocuments(r!.metamaskAddress).then((res) => console.log(res));
+        // this.ipfsService.listAllFiles().then((res) => console.log(res));
+        // this.ipfsService.listUsersDocuments(r!.metamaskAddress).then((res) => console.log(res));
         this.store.dispatch(Actions.listDocuments({ address: r!.metamaskAddress }));
+      });
+
+    this.store
+      .select(Selectors.selectDocuments)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((r) => {
+        this.rowData = r.flatMap((e) => {return {cid: e.cid, userAddress: e.userAddress}})
       });
   }
 
-  rowData = [
-    { type: 'pdf', name: 'Certificate', validFrom: new Date(), valid: true },
-    { type: 'docx', name: 'Agreement', validFrom: new Date(), valid: false },
-    { type: 'png', name: 'Invoice', validFrom: new Date(), valid: false },
-  ];
+  rowDoubleClicked(row: any) {
+    this.ipfsService.downloadJSONfile(row.cid).pipe(takeUntil(this.destroy$)).subscribe(r => {
+      console.log(r);
+    });
+  }
 
   // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [{ field: 'type' }, { field: 'name' }, { field: 'validFrom' }, { field: 'valid' }];
+  colDefs: ColDef[] = [{ field: 'cid' }, { field: 'userAddress', width: 700 }];
 
   async onFileSelected(event: any) {
-    
     const file: File = event.target.files[0];
     if (file) {
-      this.rowData.push({ type: file.type, name: file.name, validFrom: new Date(), valid: true });
-      this.grid.api.setGridOption('rowData', this.rowData);
-      this.store.dispatch(Actions.uploadDocument({file: file, address: this.address}));
+      this.store.dispatch(Actions.uploadDocument({ file: file, address: this.address }));
     }
   }
 

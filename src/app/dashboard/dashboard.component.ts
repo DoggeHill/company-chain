@@ -28,4 +28,9 @@ export class DashboardComponent  {
     await deleteDB(this._databaseName); 
     window.location.reload();
   }
+
+  sendEmail() {
+    window.location = "mailto:patrikhyll@gmail.com" as any; 
+  }
+
 }

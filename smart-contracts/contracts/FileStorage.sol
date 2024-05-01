@@ -5,13 +5,16 @@ contract FileStorage {
     struct FileData {
         string cid;
         address userAddress;
+        address authorAddress;
+        string fileName;
+        string uploadDate;
     }
 
     mapping(address => FileData[]) public userFiles;
     address[] public users; // Array to store user addresses
 
-    function storeCIDAndUserAddress(string memory cid, address userAddress) public {
-        userFiles[userAddress].push(FileData(cid, userAddress));
+    function storeCIDAndUserAddress(string memory cid, address userAddress, address authorAddress, string memory fileName, string memory uploadDate) public {
+        userFiles[userAddress].push(FileData(cid, userAddress, authorAddress, fileName, uploadDate));
         if (userFiles[userAddress].length == 1) {
             users.push(userAddress); // Add user address to the array if it's the first file for that user
         }

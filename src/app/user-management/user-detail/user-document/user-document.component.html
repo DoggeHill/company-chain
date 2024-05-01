@@ -13,7 +13,7 @@
     style="height: 400px;" 
     [columnDefs]="colDefs"
     rowSelection="single" 
-
+    (rowDoubleClicked)="rowDoubleClicked($event)"
     [rowData]="rowData">
 </ag-grid-angular>
 

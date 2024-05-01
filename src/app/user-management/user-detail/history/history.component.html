@@ -1,1 +1,23 @@
-<p>history works!</p>
+<mat-card-header class="m-d-20">
+    <h1>History</h1>
+    <div *ngIf="gridApi && canEdit | async" class="button-container">
+      <button mat-fab color="primary" aria-label="Add new user">
+        <mat-icon>playlist_add</mat-icon>
+      </button>
+      <button class="m-l-12" mat-fab color="warn" aria-label="Delete user" [disabled]="!gridApi.getSelectedRows().length">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+  <ag-grid-angular 
+    style="width: 100%; height: 600px;"
+    [rowData]="rowData"
+    [columnDefs]="colDefs"
+    [defaultColDef]="defaultColDef"
+    [rowSelection]="'single'"
+    [pagination]="true"
+    [paginationPageSize]="10"
+    [paginationPageSizeSelector]="[10,15,25]"
+    [class]="'ag-theme-quartz'"
+    (gridReady)="onGridReady($event)"
+  ></ag-grid-angular>

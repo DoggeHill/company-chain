@@ -3,15 +3,15 @@ import { Router } from '@angular/router';
 import { ColDef, GridReadyEvent, GridApi, SelectionChangedEvent } from 'ag-grid-community';
 
 import { Store } from '@ngrx/store';
-import * as Reducer from '../../store/user.reducer';
-import * as Action from '../../store/user.actions';
-import * as Selector from '../../store/user.selectors';
+import * as Reducer from '../store/user.reducer';
+import * as Action from '../store/user.actions';
+import * as Selector from '../store/user.selectors';
 import { BehaviorSubject, Subject, filter, takeUntil } from 'rxjs';
-import { User, mapIntToSex } from '../../model/user';
-import { TableLandService } from '../../../services/table-land.service';
+import { User, mapIntToSex } from '../model/user';
+import { TableLandService } from '../../services/table-land.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DeleteDialog } from '../../../shared/delete-dialog/delete-dialog';
-import { AuthGuard } from '../../../services/can-activate.service';
+import { DeleteDialog } from '../../shared/delete-dialog/delete-dialog';
+import { AuthGuard } from '../../services/can-activate.service';
 
 @Component({
   selector: 'app-user-list',

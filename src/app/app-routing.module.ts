@@ -1,12 +1,13 @@
 import { EmployeeDetailComponent } from './user-management/user-detail/employee-detail/employee-detail.component';
 import { UserBasicInformationComponent } from './user-management/user-detail/user-basic-information/user-basic-information.component';
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes, CanActivate } from '@angular/router';
-import { UserListComponent } from './user-management/user-detail/user-list/user-list.component';
+import { RouterModule, Routes } from '@angular/router';
+import { UserListComponent } from './user-management/user-list/user-list.component';
 import { UserDetailComponent } from './user-management/user-detail/user-detail.component';
 import { UserDocumentComponent } from './user-management/user-detail/user-document/user-document.component';
 import { AuthGuard } from './services/can-activate.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { HistoryComponent } from './user-management/user-detail/history/history.component';
 
 const routes: Routes = [
   {
@@ -41,7 +42,7 @@ const routes: Routes = [
       },
       {
         path: 'history',
-        component: History,
+        component: HistoryComponent,
       }
     ]
   }

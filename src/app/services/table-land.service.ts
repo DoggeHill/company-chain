@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Database, Registry } from "@tableland/sdk";
+import { Database, Registry, Validator, helpers } from "@tableland/sdk";
 import { Wallet, getDefaultProvider } from "ethers";
 import { TableLandCredentials } from "../shared/tableland-credentials";
+import { TableSchema as TablelandSchema } from "../user-management/model/table-schema";
 
 // Create a database connection
 interface TableSchema {

@@ -1,7 +1,10 @@
+import { listDocumentSuccess } from './user.ipfs.actions';
 import { createReducer, on } from '@ngrx/store';
 import * as Action from '../store/user.actions';
+import * as IpfsAction from '../store/user.ipfs.actions';
 import { Address, User } from '../model/user';
 import { Employee } from '../model/employee';
+import { IpfsFile } from '../model/ipfs-file';
 
 export interface UserState {
   userList: User[];
@@ -10,9 +13,11 @@ export interface UserState {
   address: Address | null;
   loading: boolean;
   editMode: boolean;
+  history: any[];
+  documents: IpfsFile[];
 }
 
-export const initialState: UserState = { user: null, userList: [], address: null, employee: null, loading: false, editMode: false };
+export const initialState: UserState = { user: null, userList: [], address: null, employee: null, loading: false, editMode: false, history: [], documents: [] };
 
 export const UserReducer = createReducer(
   initialState,
@@ -33,4 +38,10 @@ export const UserReducer = createReducer(
     const gridData = state.userList.filter((f) => f.id != id);
     return { ...state, userList: gridData };
   }),
+
+  on(Action.saveHistory, (state: UserState, { data }) => ({ ...state, history: state.history.concat(data) })),
+
+  on(IpfsAction.listDocumentSuccess, (state: UserState, { data }) => ({ ...state, documents: data })),
+  on(IpfsAction.uploadDocumentSuccess, (state: UserState, { data }) => ({ ...state, documents: state.documents.concat(data) })),
 );
+

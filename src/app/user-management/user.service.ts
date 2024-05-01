@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, from, map, take } from 'rxjs';
+import { Observable, delay, from, map, take } from 'rxjs';
 import { ResponseObject } from '../shared/response-object';
 import { Address, User } from './model/user';
 import { create } from '@tableland/sdk/dist/esm/registry/create';
@@ -90,6 +90,7 @@ export class UserService {
           window.db.prepare(`UPDATE ${TableSchema.address} set country = '${user.address?.country}', city = '${user.address?.city}', street = '${user.address?.street}', streetNo = '${user.address?.streetNo}', zipCode = '${user.address?.zipCode}'  where id = ${user.address?.id};`),
         ])
     ).pipe(
+      delay(500),
       map((result: any) => {
         const responseObject: ResponseObject<number> = {
           responseData: user.id,

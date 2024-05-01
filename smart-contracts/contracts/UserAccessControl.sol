@@ -28,7 +28,7 @@ contract UserAccessControl is Ownable, AccessControl {
      * @dev Revokes `MINTER_ROLE` from the specified user.
      * Can only be called by the contract owner.
      */
-    function rovokeMinterRole(address user) public onlyOwner {
+    function revokeMinterRole(address user) public onlyOwner {
         revokeRole(MINTER_ROLE, user);
     }
 

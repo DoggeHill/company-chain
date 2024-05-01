@@ -23,7 +23,7 @@ export const uploadDocument = createAction(
 
 export const uploadDocumentSuccess = createAction(
     '[IPFS] Upload IPFS documents success',
-    props<{ data: File }>()
+    props<{ data: IpfsFile }>()
 );
   
 export const uploadDocumentFailure = createAction(

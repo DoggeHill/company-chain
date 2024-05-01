@@ -34,3 +34,14 @@ export const selectLoading = createSelector(
     selectUserModule,
     (state: Reducer.UserState) => state.loading,
 );
+
+export const selectHistory = createSelector(
+    selectUserModule,
+    (state: Reducer.UserState) => state.history,
+);
+
+
+export const selectDocuments = createSelector(
+    selectUserModule,
+    (state: Reducer.UserState) => state.documents,
+);

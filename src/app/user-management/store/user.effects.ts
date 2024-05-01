@@ -52,6 +52,7 @@ export class UserEffect {
       switchMap(res => {
         if (res.success) {
           return this.service.findUser(res.responseData).pipe(
+            delay(300),
             map((res) => Action.editUserSuccess({data: res.responseData})),
             catchError(err => of(Action.editUserFailure({ error: err })))
           );

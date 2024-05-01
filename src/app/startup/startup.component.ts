@@ -8,8 +8,6 @@ import { ContractAddresses } from '../shared/contract-addresses';
 import { IpfsService } from '../services/ipfs.service';
 import { openDB } from 'idb';
 import { TableLandService } from '../services/table-land.service';
-import { helpers } from '@tableland/sdk';
-import { TableSchema } from '../user-management/model/table-schema';
 import UserAccessControl from '../../assets/contracts/UserAccessControl.json'
 import { AbiItem } from 'web3-utils'
 import { Config } from '../shared/config';

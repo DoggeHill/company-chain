@@ -102,3 +102,8 @@ export const editEmployeeFailure = createAction(
   '[User] Edit Employee failure',
   props<{ error: any }>()
 );
+
+export const saveHistory  = createAction(
+  '[User] Insert history record',
+  props<{ data: any }>()
+);
