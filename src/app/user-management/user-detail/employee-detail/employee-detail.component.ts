@@ -4,7 +4,17 @@ import { Store } from '@ngrx/store';
 import * as Reducer from '../../store/user.reducer';
 import * as Actions from '../../store/user.actions';
 import * as Selectors from '../../store/user.selectors';
-import { Subject, combineLatest, filter, takeUntil, switchMap, from, BehaviorSubject } from 'rxjs';
+import {
+  Subject,
+  combineLatest,
+  filter,
+  takeUntil,
+  switchMap,
+  from,
+  BehaviorSubject,
+  catchError,
+  of,
+} from 'rxjs';
 import { FormBuilder, Validators } from '@angular/forms';
 import { RegisterService } from '../../../services/register.service';
 import { Department } from '../../../shared/department';
@@ -14,6 +24,9 @@ import UserAccessControl from '../../../../assets/contracts/UserAccessControl.js
 import { Web3Service } from '../../../services/web3.service';
 import { AbiItem } from 'web3-utils';
 import { ContractAddresses } from '../../../shared/contract-addresses';
+import { User } from '../../model/user';
+import { UserService } from '../../user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-employee-detail',
@@ -30,15 +43,28 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
   offices: Office[] = [];
   contract: any = null;
   minter = new BehaviorSubject(false);
+  user: User | null = null;
 
-  constructor(private store: Store<Reducer.UserState>, private fb: FormBuilder, private registers: RegisterService, private metamaskService: Web3Service) {
-    this.contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.USER_ACCESS_CONTRACT);
+  constructor(
+    private store: Store<Reducer.UserState>,
+    private fb: FormBuilder,
+    private registers: RegisterService,
+    private userService: UserService,
+    private metamaskService: Web3Service,
+    private snackBar: MatSnackBar
+  ) {
+    this.contract = new window.web3.eth.Contract(
+      UserAccessControl.abi as AbiItem[],
+      ContractAddresses.USER_ACCESS_CONTRACT
+    );
+    this.createFormGroup();
 
-    combineLatest([registers.listDepartments(), registers.listOffices()]).subscribe(([deps, offs]) => {
-      this.departments = deps.results;
-      this.offices = offs.results;
-      this.createFormGroup();
-    });
+    combineLatest([registers.listDepartments(), registers.listOffices()]).subscribe(
+      ([deps, offs]) => {
+        this.departments = deps.results;
+        this.offices = offs.results;
+      }
+    );
   }
 
   ngOnInit(): void {
@@ -48,12 +74,20 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
         takeUntil(this._destroy$),
         filter((e) => !!e),
         switchMap((user) => {
+          this.user = user;
           this.store.dispatch(Actions.findEmployee({ id: user?.employeeId! }));
-          return from(this.contract.methods.isMinter().send({from: user?.metamaskAddress}));
+          const roleHash = window.web3.utils.keccak256('MINTER_ROLE');
+          return from(this.contract.methods.hasRole(roleHash, user?.metamaskAddress).call());
         })
       )
       .subscribe((minter) => {
-        if(minter) this.minter.next(true);
+        if (minter) {
+          this.formGroup.get('token.access').setValue(true);
+          this.minter.next(true);
+        } else {
+          this.minter.next(false);
+          this.formGroup.get('token.access').setValue(false);
+        }
       });
 
     this.store
@@ -71,7 +105,57 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    this.store.dispatch(Actions.editEmployee({ data: this.formGroup.get('department').getRawValue() }));
+    const value = this.formGroup.get('token.access').value;
+
+    // Under normal circumstances this authentication should be done through redux store on service layer
+    // However for simple example purposes and simpler debugging it is places here
+    if (value != this.minter.value) {
+      if (value) {
+        this.contract.methods
+          .grantMinterRole(this.user!.metamaskAddress)
+          .send({ from: this.metamaskService.getConnectedAccount() });
+        this.userService
+          .grantAccessToAllTables(this.user!.metamaskAddress)
+          .pipe(takeUntil(this._destroy$))
+          .subscribe((res) => {
+            if (res.success) {
+              this.snackBar.open('Access granted', 'Close', {
+                duration: 2000,
+              });
+            }
+          }),
+          catchError((err) => {
+            this.snackBar.open('Error' + err, 'Close', {
+              duration: 2000,
+            });
+            return of(false);
+          });
+      } else {
+        this.contract.methods
+          .revokeMinterRole(this.user!.metamaskAddress)
+          .send({ from: this.metamaskService.getConnectedAccount() });
+
+        this.userService
+          .revokeAccessFromAllTables(this.user!.metamaskAddress)
+          .pipe(takeUntil(this._destroy$))
+          .subscribe((res) => {
+            if (res.success) {
+              this.snackBar.open('Access revoked', 'Close', {
+                duration: 2000,
+              });
+            }
+          }),
+          catchError((err) => {
+            this.snackBar.open('Error' + err, 'Close', {
+              duration: 2000,
+            });
+            return of(false);
+          });
+      }
+    }
+    this.store.dispatch(
+      Actions.editEmployee({ data: this.formGroup.get('department').getRawValue() })
+    );
     this.editMode = false;
     this.formGroup.disable();
   }
@@ -80,7 +164,7 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
     this.formGroup = this.fb.group({
       token: this.fb.group({
         id: this.fb.control(null),
-        access: this.fb.control(this.minter),
+        access: this.fb.control(null),
       }),
       department: this.fb.group({
         id: this.fb.control(null),

@@ -5,7 +5,7 @@ import * as Reducer from '../../store/user.reducer';
 import * as Actions from '../../store/user.actions';
 import * as Selectors from '../../store/user.selectors';
 import { Store } from '@ngrx/store';
-import { Subject, take, takeUntil } from 'rxjs';
+import { Subject, filter, take, takeUntil } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
@@ -35,7 +35,7 @@ export class UserBasicInformationComponent {
 
     this.store
       .select(Selectors.selectUser)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), filter((r) => !!r))
       .subscribe((r) => {
         let data = JSON.parse(JSON.stringify(r));
         data.birthDay = moment(r?.birthDay, 'DD/MM/YYYY').toDate();
@@ -76,7 +76,11 @@ export class UserBasicInformationComponent {
     let user: User = JSON.parse(JSON.stringify(this.formGroup?.getRawValue().personalDetail));
     let address: Address = JSON.parse(JSON.stringify(this.formGroup?.getRawValue().address));
     user.address = address;
-    this.store.dispatch(Actions.editUser({ data: user }));
+    if(user.id) {
+      this.store.dispatch(Actions.editUser({ data: user }));
+    } else {
+      this.store.dispatch(Actions.cre({ data: user }));
+    }
     this.editMode = false;
     this.formGroup?.disable();
   }

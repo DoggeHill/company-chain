@@ -48,15 +48,18 @@ export class UserDetailComponent implements OnInit {
     const eventBus = new helpers.TableEventBus(window.db.config);
     const listener = await eventBus.addListener(`${TableSchema.user}`); // Replace with your table name
     listener.on('change', async (event) => {
-      console.log(event);
       window.web3.eth.getTransaction(event.transactionHash, (err: any, result: any) => {
         if (result.input) {
-          // Regex pattern
+          // Regex pattern update
           let regex = /7570.*?(000)/;
+          let regexDelete = /2464.*?(000)/;
 
           // Find matches
           let matches = result.input.match(regex);
-          let res = matches[0].replace('000', '').replace('7570', '0x7570');
+          if(matches == null) {
+            matches = result.input.match(regexDelete);
+          }
+          let res = matches[0].replace('000', '').replace('7570', '0x7570').replace('2464', '0x2464');
 
           let history = {
             transaction: window.web3.utils.hexToUtf8(res),
@@ -64,7 +67,6 @@ export class UserDetailComponent implements OnInit {
             author: result.from,
           };
           this.store.dispatch(Actions.saveHistory({ data: history }));
-          console.log(history);
         }
       });
     });

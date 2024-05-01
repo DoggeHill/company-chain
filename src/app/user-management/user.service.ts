@@ -30,7 +30,6 @@ export class UserService {
         .all()
     ).pipe(
       map((res: any) => {
-        console.log(res);
         res = res as Response<User[]>;
         res.results.forEach((element: any) => {
           element.address = this.constructAddress(element);
@@ -182,6 +181,52 @@ export class UserService {
           meta: result.meta,
           error: result.error,
           responseMessage: 'user edited',
+        };
+        return response;
+      })
+    );
+  }
+
+  grantAccessToAllTables(address: string): Observable<Response<any>> {
+    return from(
+      window.db.batch([
+        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.user} TO '${address}'`),
+        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.address} TO '${address}'`),
+        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.department} TO '${address}'`),
+        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.employee} TO '${address}'`),
+        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.office} TO '${address}'`),
+      ])
+    ).pipe(
+      map((result: any) => {
+        const response: Response<number> = {
+          results: result,
+          success: result.success,
+          meta: result.meta,
+          error: result.error,
+          responseMessage: 'user access granted to ' + address,
+        };
+        return response;
+      })
+    );
+  }
+
+  revokeAccessFromAllTables(address: string): Observable<Response<any>> {
+    return from(
+      window.db.batch([
+        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.user} FROM '${address}'`),
+        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.address} FROM '${address}'`),
+        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.department} FROM '${address}'`),
+        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.employee} FROM '${address}'`),
+        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.office} FROM '${address}'`),
+      ])
+    ).pipe(
+      map((result: any) => {
+        const response: Response<number> = {
+          results: result,
+          success: result.success,
+          meta: result.meta,
+          error: result.error,
+          responseMessage: 'user access revoked to ' + address,
         };
         return response;
       })

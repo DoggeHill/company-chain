@@ -12,7 +12,6 @@ import { HistoryComponent } from './user-management/user-detail/history/history.
 const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
     component: DashboardComponent,
   },
   {
@@ -46,7 +45,8 @@ const routes: Routes = [
         component: HistoryComponent,
       }
     ]
-  }
+  },
+  {path: '**', redirectTo: ''},
 ];
 
 @NgModule({

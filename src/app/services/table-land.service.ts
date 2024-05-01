@@ -85,7 +85,6 @@ export class TableLandService {
         await create.txn?.wait();
 
         const tableName = create.txn?.names[0] ?? ""; // e.g., my_table_31337_2
-        console.log(tableName);
 
         const execWrites = await window.db.batch([
             window.db.prepare(`INSERT INTO ${tableName} (id, departmentId, officeId) VALUES (?, ?, ?);`).bind(1, 1, 1),

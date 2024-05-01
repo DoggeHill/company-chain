@@ -43,13 +43,14 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.startupComponent
       .init()
-      .pipe(delay(600))
+      .pipe(delay(1000))
       .subscribe((res) => {
         if (res) {
           this.isLoading.next(false);
           this.snackBar.open('All set!', 'Close', {
             duration: 2000, // Set the duration in milliseconds
           });
+          this.router.navigate(['/']);
         } else {
           window.location.href = 'https://sk.wikipedia.org/wiki/Chyba';
         }

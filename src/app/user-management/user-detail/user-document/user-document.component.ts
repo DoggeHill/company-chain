@@ -62,7 +62,6 @@ export class UserDocumentComponent {
       .select(Selectors.selectUser)
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
-        console.log(r);
         this.address = r!.metamaskAddress;
         this.store.dispatch(Actions.listDocuments({ address: r!.metamaskAddress }));
       });

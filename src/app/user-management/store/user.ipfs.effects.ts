@@ -20,7 +20,6 @@ export class UserIpfsEffects {
         this.service.listDocuments(action.address).pipe(
           map((res) => {
             if (res) {
-              console.log(res);
               return Action.listDocumentSuccess({ data: res });
             } else {
               this.snackBar.open('Error' + res, 'Close', {

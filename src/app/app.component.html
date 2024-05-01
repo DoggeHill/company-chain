@@ -7,8 +7,7 @@
       <mat-icon mat-list-icon>person</mat-icon>
       <h3 mat-link>user_name</h3>
       <span class="address" mat-link>{{web3Service.getConnectedAccount()}}</span>
-      <!-- <h4 mat-link>{{metamask.getBalance(metamask.getConnectedAccount())}}</h4> -->
-      <!---  <h4 mat-link>{{metamask.getInfo()}}</h4> -->
+      <!-- <h4 mat-link>{{web3Service.getInfo()}}</h4> -->
     </div>
     <mat-nav-list class="navigation">
       @for (link of links; track link) {
@@ -23,22 +22,21 @@
   <div class="sidenav-content">
     <p>
       <mat-toolbar id="toolbar">
-        <button mat-icon-button class="example-icon" (click)="drawer.toggle()"
-          aria-label="Example icon-button with menu ico">
+        <button mat-icon-button (click)="drawer.toggle()" aria-label="Example icon-button with menu ico">
           <mat-icon>menu</mat-icon>
         </button>
         <span>Company chain</span>
         <div class="icon-links">
-          <button mat-icon-button class="example-icon favorite-icon" aria-label="GitHub favorite">
-            <a href="https://github.com/DoggeHill/company-chain">
+          <a href="https://github.com/DoggeHill/company-chain">
+            <button mat-icon-button class="favorite-icon" aria-label="GitHub favorite">
               <mat-icon>favorite</mat-icon>
-            </a>
-          </button>
-          <button mat-icon-button class="example-icon" aria-label="Share project">
-            <a href="https://github.com/DoggeHill/company-chain">
+            </button>
+          </a>
+          <a href="https://github.com/DoggeHill/company-chain">
+            <button mat-icon-button aria-label="Share project">
               <mat-icon>share</mat-icon>
-            </a>
-          </button>
+            </button>
+          </a>
         </div>
       </mat-toolbar>
     </p>

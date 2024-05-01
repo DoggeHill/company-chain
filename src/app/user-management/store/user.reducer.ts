@@ -1,4 +1,3 @@
-import { listDocumentSuccess } from './user.ipfs.actions';
 import { createReducer, on } from '@ngrx/store';
 import * as Action from '../store/user.actions';
 import * as IpfsAction from '../store/user.ipfs.actions';
@@ -30,7 +29,7 @@ export const UserReducer = createReducer(
   on(Action.editUserFailure, (state: UserState) => ({ ...state, loading: false })),
 
   on(Action.editEmployee, (state: UserState) => ({ ...state, loading: true })),
-  on(Action.editEmployeeSuccess, (state: UserState, {data}) => ({ ...state, editMode: false, loading: false, employee: data })),
+  on(Action.editEmployeeSuccess, (state: UserState, {data}) => ({ ...state, editMode: false, loading: false, employee: {...data} })),
   on(Action.editEmployeeFailure, (state: UserState) => ({ ...state, loading: false })),
 
   on(Action.listUserSuccess, (state: UserState, { data }) => ({ ...state, userList: data })),
@@ -38,10 +37,15 @@ export const UserReducer = createReducer(
     const gridData = state.userList.filter((f) => f.id != id);
     return { ...state, userList: gridData };
   }),
+  
+  on(IpfsAction.listDocuments, (state: UserState, ) => ({ ...state, loading: true })),
+  on(IpfsAction.listDocumentSuccess, (state: UserState, { data }) => ({ ...state, documents: data, loading: false })),
+  on(IpfsAction.listDocumentFailure, (state: UserState, ) => ({ ...state, loading: false })),
+  
+  on(IpfsAction.uploadDocument, (state: UserState, ) => ({ ...state, loading: true })),
+  on(IpfsAction.uploadDocumentSuccess, (state: UserState, { data }) => ({ ...state, documents: state.documents.concat(data) })),
+  on(IpfsAction.uploadDocumentFailure, (state: UserState, ) => ({ ...state, loading: false })),
 
   on(Action.saveHistory, (state: UserState, { data }) => ({ ...state, history: state.history.concat(data) })),
-
-  on(IpfsAction.listDocumentSuccess, (state: UserState, { data }) => ({ ...state, documents: data })),
-  on(IpfsAction.uploadDocumentSuccess, (state: UserState, { data }) => ({ ...state, documents: state.documents.concat(data) })),
 );
 

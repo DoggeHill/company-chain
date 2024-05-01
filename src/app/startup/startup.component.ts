@@ -317,22 +317,9 @@ export class StartupComponent implements OnDestroy {
     this.tableLandFactory = res.TABLELAND_FACTORY;
   }
 
-
-  // admin grant access to himself
-  resetRoles() {
-    const contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.USER_ACCESS_CONTRACT);
-    const refreshTickets = async () => {
-        await contract.methods.grantMinterRole(this.metamaskService.getConnectedAccount()).send({from: this.metamaskService.getConnectedAccount()});
-    };
-    refreshTickets().then((res) => {
-      console.log(res);
-    }).catch((e) => console.log(e));
-  }
-
   reloadComponent(){
     window.location.reload();
   }
-
 
   ngOnDestroy() {
     this.destroy$.next(null);
