@@ -4,7 +4,7 @@ import * as Action from '../store/user.actions';
 import * as IpfsAction from '../store/user.ipfs.actions';
 import { Address, User } from '../model/user';
 import { Employee } from '../model/employee';
-import { IpfsFile } from '../model/ipfs-file';
+import { IpfsFile } from '../../shared/ipfs-file';
 
 export interface UserState {
   userList: User[];

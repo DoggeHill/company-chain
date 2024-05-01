@@ -1,11 +1,11 @@
 <div id="dashboard">
   <section class="dash-row">
-    <mat-card style="display: flex; flex-direction: column;">
+    <mat-card fxLayout="column">
       <mat-card-title>
         Welcome!
       </mat-card-title>
       <mat-card-subtitle>This is CompanyChain management dashboard!</mat-card-subtitle>
-      <mat-card-content style="display: flex; justify-content: center; align-items: center; flex: 1;">
+      <mat-card-content fxLayout="row" fxLayoutAlign="center center" fxFlex="grow">
         <img mat-card-image style="height: 170px"
           src="https://gistcdn.githack.com/mike-schultz/10a1a059f77cc33a350d85a0870397e2/raw/d11f4b4804d9a49faec957a1d51c3d4e5174477c/data_xmfy.svg" />
       </mat-card-content>
@@ -18,8 +18,6 @@
         Traffic
       </mat-card-title>
       <mat-card-subtitle style="color: white">www.yourwebsite.com</mat-card-subtitle>
-     
-
     </mat-card>
     <mat-card id="card-0-2">
       <mat-card-title>
@@ -32,8 +30,8 @@
     </mat-card>
   </section>
   <section class="dash-row">
-    <mat-card style="flex: 2">
-      <mat-card-title style="margin-bottom: 1rem">
+    <mat-card fxFlex="2">
+      <mat-card-title class="m-b-16">
         Employees
       </mat-card-title>
       <mat-card-subtitle>Number of employees:</mat-card-subtitle>

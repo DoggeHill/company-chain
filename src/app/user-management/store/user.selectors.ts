@@ -1,5 +1,3 @@
-import { UserState } from './../../audit-management/store/audit.reducer';
-import { User } from './../model/user';
 import { createSelector } from "@ngrx/store";
 import * as Reducer from "../store/user.reducer";
 import * as AppReducer from "../../../app/store/reducer/app.reducer";

@@ -9,6 +9,32 @@ export class Web3Service {
   private _connectedAccount: string = '';
 
   constructor() {}
+
+  /**
+   * Connect application with metamask
+   */
+  async connectMetamask() {
+    try {
+      //check metamask is installed
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        // instantiate Web3 with the injected provider
+        const web3 = window.web3;
+        // request user to connect accounts (Metamask will prompt)
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        // get the connected accounts
+        const accounts = await web3.eth.getAccounts();
+        // show the first connected account in the react page
+        this._connectedAccount = accounts[0];
+        console.info(this._connectedAccount, 'Metamask account');
+      } else {
+        alert('Please download metamask');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   /**
    * Gets info
    * For logging purposes, we trace some info like our web3 version
@@ -40,40 +66,6 @@ export class Web3Service {
   }
 
   /**
-   * Determines whether metamask installed is
-   * @returns
-   */
-  isMetamaskInstalled() {
-    return of((window as any).ethereum);
-  }
-
-  async connectMetamask() {
-    try {
-      //check metamask is installed
-      if (window.ethereum) {
-        //await window.ethereum.request({ method: 'eth_requestAccounts' });
-        window.web3 = new Web3(window.ethereum);
-        // instantiate Web3 with the injected provider
-        const web3 = window.web3;
-        window.loaded = true;
-        //request user to connect accounts (Metamask will prompt)
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-        //get the connected accounts
-        const accounts = await web3.eth.getAccounts();
-
-        //show the first connected account in the react page
-        this._connectedAccount = accounts[0];
-        console.info(this._connectedAccount, 'Metamask account');
-      } else {
-        alert('Please download metamask');
-      }
-    } catch(err) {
-      console.error(err);
-    }
-  }
-
-  /**
    * Determines whether metamask is unlocked
    * @returns
    */
@@ -88,4 +80,13 @@ export class Web3Service {
   async isBlockchainConnected() {
     return (window as any).ethereum.isConnected();
   }
+
+  /**
+   * Determines whether metamask installed is
+   * @returns
+   */
+  async isMetamaskInstalled() {
+    return of((window as any).ethereum);
+  }
+
 }

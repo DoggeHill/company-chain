@@ -33,6 +33,8 @@ As application boots, enter **CID** or use sample installation.
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. However **build is not optimized**, since this application is not intended to be build.
 
+Compiled contracts(ABI files) are located in *src/assets*. Basically compiled contract files should stay the same and do not need to be replaced unless you modify smart contracts.
+
 ## Running unit tests
 
 Run `truffle test` in *smart-contracts/test* to execute the unit tests via [Mocha](https://mochajs.org).

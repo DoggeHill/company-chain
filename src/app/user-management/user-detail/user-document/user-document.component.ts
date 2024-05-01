@@ -11,7 +11,7 @@ import * as Actions from '../../store/user.ipfs.actions';
 import * as Selectors from '../../store/user.selectors';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
-import { IpfsFile } from '../../model/ipfs-file';
+import { IpfsFile } from '../../../shared/ipfs-file';
 
 @Component({
   selector: 'app-user-document',
@@ -85,7 +85,7 @@ export class UserDocumentComponent {
   }
 
   rowDoubleClicked(row: any) {
-    this.ipfsService.downloadJSONfile(row.cid).pipe(takeUntil(this.destroy$)).subscribe(r => {
+    this.ipfsService.downloadFile(row.cid).pipe(takeUntil(this.destroy$)).subscribe(r => {
       console.log(r);
     });
   }

@@ -17,5 +17,5 @@ import { MatDialogRef, MatDialogActions, MatDialogContent, MAT_DIALOG_DATA, MatD
 })
 export class DeleteDialog {
   constructor(public dialogRef: MatDialogRef<DeleteDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: { filename: string }) { }
+    @Inject(MAT_DIALOG_DATA) public data: { name: string }) { }
 }

@@ -1,9 +1,6 @@
 <div class="detailForm-header" fxLayout="row" fxLayoutAlign="space-between"
     [ngClass]="(formGroup?.enabled)? 'detailForm-edit-header' : ''">
     <h1>Document</h1>
-    <div class="action">
-        <button *ngIf="!formGroup?.enabled" mat-raised-button (click)="edit()">Edit</button>
-    </div>
 </div>
 <mat-divider></mat-divider>
 
@@ -18,7 +15,7 @@
 </ag-grid-angular>
 
 <div class="detailForm-body m-t-20" *ngIf="formGroup" [formGroup]="formGroup"
-    [ngClass]="(formGroup?.enabled)? 'detailForm-edit-body' : ''">
+    [ngClass]="(formGroup.enabled)? 'detailForm-edit-body' : ''">
 
     <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
 

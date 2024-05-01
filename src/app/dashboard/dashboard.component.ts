@@ -1,5 +1,4 @@
 import { Component, } from '@angular/core';
-import { table } from 'console';
 import { deleteDB, openDB } from 'idb';
 import { from, take } from 'rxjs';
 
@@ -32,5 +31,4 @@ export class DashboardComponent  {
   sendEmail() {
     window.location = "mailto:patrikhyll@gmail.com" as any; 
   }
-
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
@@ -6,7 +6,7 @@ import * as Reducer from '../../store/user.reducer';
 import * as Selectors from '../../store/user.selectors';
 import * as Actions from '../../store/user.actions';
 import { User } from '../../model/user';
-import { ColDef, GridReadyEvent, GridApi, SelectionChangedEvent } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-community';
 
 
 @Component({
@@ -14,14 +14,13 @@ import { ColDef, GridReadyEvent, GridApi, SelectionChangedEvent } from 'ag-grid-
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss'
 })
-export class HistoryComponent implements OnInit {
+export class HistoryComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();
   loading$ = new Observable<boolean>();
 
   private _destroy$ = new Subject();
   private _gridReady: boolean = false;
   public gridApi: GridApi | any = undefined;
-  public canEdit = new BehaviorSubject(false);
   public rowData: User[] = [];
   public defaultColDef: ColDef = {
     filter: 'agTextColumnFilter',
@@ -64,6 +63,14 @@ export class HistoryComponent implements OnInit {
     this._gridReady = true;
     this.loadData();
   }
-  
+
+  onBtnExport() {
+    this.gridApi.exportDataAsCsv();
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next(null);
+    this._destroy$.complete();
+  }
 }
 

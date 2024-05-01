@@ -16,9 +16,9 @@ export class UserEffect {
     mergeMap((action) => this.service.listUsers().pipe(
       map(res => {
         if (res.success) {
-          return Action.listUserSuccess({data: res.responseData});
+          return Action.listUserSuccess({data: res.results});
         } else {
-          return Action.listUserFailure({error: res.responseMessage});
+          return Action.listUserFailure({error: res.results});
         }
       }),
       catchError(err => {
@@ -33,7 +33,7 @@ export class UserEffect {
     mergeMap((action) => this.service.findUser(action.id).pipe(
       map(res => {
         if (res.success) {
-          return Action.findUserSuccess({data: res.responseData});
+          return Action.findUserSuccess({data: res.results});
         } else {
           return Action.findUserFailure({error: res.responseMessage});
         }
@@ -51,9 +51,9 @@ export class UserEffect {
       filter((res) => !!res),
       switchMap(res => {
         if (res.success) {
-          return this.service.findUser(res.responseData).pipe(
+          return this.service.findUser(res.results).pipe(
             delay(300),
-            map((res) => Action.editUserSuccess({data: res.responseData})),
+            map((res) => Action.editUserSuccess({data: res.results})),
             catchError(err => of(Action.editUserFailure({ error: err })))
           );
         } else {
@@ -69,8 +69,7 @@ export class UserEffect {
     mergeMap((action) => this.service.deleteUser(action.user).pipe(
       map(res => {
         if (res.success) {
-          console.log(res.success);
-          return Action.deleteUserSuccess({id: res.responseData});
+          return Action.deleteUserSuccess({id: res.results});
         } else {
           return Action.deleteUserFailure({error: res.responseMessage});
         }
@@ -87,8 +86,7 @@ export class UserEffect {
     mergeMap((action) => this.service.findUserAddress(action.id).pipe(
       map(res => {
         if (res.success) {
-          console.log(res.success);
-          return Action.findUserAddressSuccess({data: res.responseData});
+          return Action.findUserAddressSuccess({data: res.results});
         } else {
           return Action.findUserAddressFailure({error: res.responseMessage});
         }
@@ -104,8 +102,7 @@ export class UserEffect {
     mergeMap((action) => this.service.findEmployee(action.id).pipe(
       map(res => {
         if (res.success) {
-          console.log(res.success);
-          return Action.findEmployeeSuccess({data: res.responseData});
+          return Action.findEmployeeSuccess({data: res.results});
         } else {
           return Action.findEmployeeFailure({error: res.responseMessage});
         }
@@ -121,8 +118,8 @@ export class UserEffect {
     mergeMap((action) => this.service.editEmployee(action.data).pipe(
       switchMap(res => {
         if (res.success) {
-          return this.service.findEmployee(res.responseData).pipe(
-            map((res) => Action.editEmployeeSuccess({data: res.responseData})),
+          return this.service.findEmployee(res.results).pipe(
+            map((res) => Action.editEmployeeSuccess({data: res.results})),
             catchError(err => of(Action.editEmployeeFailure({ error: err })))
           );
         } else {

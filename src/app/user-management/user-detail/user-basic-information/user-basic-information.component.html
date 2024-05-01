@@ -13,7 +13,7 @@
 <mat-divider></mat-divider>
 
 <div class="detailForm-body" *ngIf="formGroup" [formGroup]="formGroup"
-    [ngClass]="(formGroup?.enabled)? 'detailForm-edit-body' : ''">
+    [ngClass]="(formGroup.enabled)? 'detailForm-edit-body' : ''">
     <ng-container [formGroup]="formGroup" [formGroupName]="'personalDetail'" class="m-b-20">
         <h2 class="m-t-20">Address</h2>
         <div fxLayout="row" fxLayoutGap="2%">

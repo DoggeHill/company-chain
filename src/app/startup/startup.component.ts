@@ -13,6 +13,7 @@ import { AbiItem } from 'web3-utils'
 import { Config } from '../shared/config';
 import { TableLandCredentials } from '../shared/tableland-credentials';
 import { Router } from '@angular/router';
+import { AuthGuard } from '../services/can-activate.service';
 
 enum Steps {
   "config_loaded" = 0,
@@ -120,6 +121,7 @@ export class StartupComponent implements OnDestroy {
     private metamaskService: Web3Service, 
     private ipfsService: IpfsService, 
     private tableLandService: TableLandService,
+    private authGuard: AuthGuard,
     private router: Router,
   ) {
   }
@@ -176,7 +178,7 @@ export class StartupComponent implements OnDestroy {
                   }
                   this.progress(Steps.ipfs_connected);
                   
-                  return from(this.tableLandService.connect()).pipe(takeUntil(this.destroy$), delay(300), switchMap(res => {
+                  return of(this.tableLandService.connect()).pipe(takeUntil(this.destroy$), delay(300), switchMap(res => {
                     if(!res) {
                       this.error(Errors.table_land_not_connected);
                       throw("IPFSProviderNotAuthenticated");
@@ -187,7 +189,7 @@ export class StartupComponent implements OnDestroy {
                       this.progress(Steps.tableland_factory_init);
                       return from(this.tableLandService.isFactoryDone()).pipe(
                         switchMap(value => {
-                          if (value) {
+                          if (value?.length > 0) {
                             return of(true);
                           } else {
                             return from(this.tableLandService.factory()).pipe(
@@ -235,7 +237,7 @@ export class StartupComponent implements OnDestroy {
   }
   
   private downloadConfigFromIpfs(): Observable<any> {
-    return from(this.ipfsService.downloadJSONfile(this._pinataConfigCid!)).pipe(
+    return from(this.ipfsService.downloadFile(this._pinataConfigCid!)).pipe(
       takeUntil(this.destroy$),
       tap((config) => {
         this.setLocalConfigurations(config as Config);
@@ -303,15 +305,14 @@ export class StartupComponent implements OnDestroy {
   }
 
   private setLocalConfigurations(res: Config): void {
-    PinataCredentials.PINATA_API_KEY = res.PINATA_API_KEY;
     PinataCredentials.PINATA_JWT = res.PINATA_API_JWT;
-    PinataCredentials.PINATA_SECRET = res.PINATA_API_SECRET;
 
     TableLandCredentials.TABLELAND_PRIVATE_KEY = res.TABLELAND_PRIVATE_KEY;
     TableLandCredentials.TABLELAND_PROVIDER = res.TABLELAND_PROVIDER;
 
     ContractAddresses.IPFS_CONTRACT = res.FILE_STORAGE_CONTRACT_ADDRESS;
     ContractAddresses.USER_ACCESS_CONTRACT = res.USER_ACCESS_CONTROL_CONTRACT_ADDRESS;
+    ContractAddresses.USER_ACCESS_CONTRACT_DEPLOYER_ADDRESS = res.USER_ACCESS_CONTROL_CONTRACT_DEPLOYER_ADDRESS;
 
     this.tableLandFactory = res.TABLELAND_FACTORY;
   }

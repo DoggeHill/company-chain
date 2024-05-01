@@ -4,11 +4,11 @@ import { Store } from '@ngrx/store';
 import * as Reducer from '../../store/user.reducer';
 import * as Actions from '../../store/user.actions';
 import * as Selectors from '../../store/user.selectors';
-import { Subject, combineLatest, filter, takeUntil } from 'rxjs';
+import { Subject, combineLatest, filter, takeUntil, switchMap, from, BehaviorSubject } from 'rxjs';
 import { FormBuilder, Validators } from '@angular/forms';
 import { RegisterService } from '../../../services/register.service';
-import { Department } from '../../model/department';
-import { Office } from '../../model/office';
+import { Department } from '../../../shared/department';
+import { Office } from '../../../shared/office';
 import { Employee } from '../../model/employee';
 import UserAccessControl from '../../../../assets/contracts/UserAccessControl.json';
 import { Web3Service } from '../../../services/web3.service';
@@ -29,13 +29,14 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
   departments: Department[] = [];
   offices: Office[] = [];
   contract: any = null;
+  minter = new BehaviorSubject(false);
 
   constructor(private store: Store<Reducer.UserState>, private fb: FormBuilder, private registers: RegisterService, private metamaskService: Web3Service) {
     this.contract = new window.web3.eth.Contract(UserAccessControl.abi as AbiItem[], ContractAddresses.USER_ACCESS_CONTRACT);
 
     combineLatest([registers.listDepartments(), registers.listOffices()]).subscribe(([deps, offs]) => {
-      this.departments = deps.responseData;
-      this.offices = offs.responseData;
+      this.departments = deps.results;
+      this.offices = offs.results;
       this.createFormGroup();
     });
   }
@@ -45,13 +46,14 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
       .select(Selectors.selectUser)
       .pipe(
         takeUntil(this._destroy$),
-        filter((e) => !!e)
+        filter((e) => !!e),
+        switchMap((user) => {
+          this.store.dispatch(Actions.findEmployee({ id: user?.employeeId! }));
+          return from(this.contract.methods.isMinter().call());
+        })
       )
-      .subscribe(async (r) => {
-        this.store.dispatch(Actions.findEmployee({ id: r?.employeeId! }));
-
-        const res = await this.contract.methods.isMinter().call();
-        console.log(res);
+      .subscribe((minter) => {
+        if(minter) this.minter.next(true);
       });
 
     this.store
@@ -78,7 +80,7 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
     this.formGroup = this.fb.group({
       token: this.fb.group({
         id: this.fb.control(null),
-        access: this.fb.control(true),
+        access: this.fb.control(this.minter),
       }),
       department: this.fb.group({
         id: this.fb.control(null),

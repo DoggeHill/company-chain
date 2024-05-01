@@ -37,8 +37,9 @@ export class UserBasicInformationComponent {
       .select(Selectors.selectUser)
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
-        console.log(r);
-        this.formGroup?.patchValue({ personalDetail: r });
+        let data = JSON.parse(JSON.stringify(r));
+        data.birthDay = moment(r?.birthDay, 'DD/MM/YYYY').toDate();
+        this.formGroup?.patchValue({ personalDetail: data });
         // @ts-ignore
         this.store.dispatch(Actions.findUserAddress({ id: r?.addressId }));
       });
@@ -47,7 +48,6 @@ export class UserBasicInformationComponent {
       .select(Selectors.selectAddress)
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
-        console.log(r);
         this.formGroup?.patchValue({ address: r });
       });
   }
@@ -64,41 +64,21 @@ export class UserBasicInformationComponent {
     this.formGroup?.get('personalDetail.metamaskAddress')?.disable();
   }
 
+  delete() {this.snackBar.open('Delete fro User List!', 'Close', {duration: 500})}
+
   save() {
     if (this.formGroup?.invalid) {
       this.snackBar.open('Form invalid', 'Close', {
-        duration: 2000, // Set the duration in milliseconds
+        duration: 2000,
       });
       return;
     }
     let user: User = JSON.parse(JSON.stringify(this.formGroup?.getRawValue().personalDetail));
-    user.birthDay = moment(this.formGroup?.get('personalDetail.birthDay')?.value).toDate().toJSON();
-
     let address: Address = JSON.parse(JSON.stringify(this.formGroup?.getRawValue().address));
     user.address = address;
-
     this.store.dispatch(Actions.editUser({ data: user }));
     this.editMode = false;
     this.formGroup?.disable();
-  }
-
-  delete() {}
-
-  async createTable() {
-    // const contract = new window.web3.eth.Contract(ticketsContract.abi as AbiItem[], this.tickets);
-    // const refreshTickets = async () => {
-    //   for (let i = 0; i < 10; i++) {
-    //     const ticket = await contract.methods.tickets(i).call();
-    //     console.log(ticket);
-    //   }
-    //   buyTicket();
-    // };
-    // refreshTickets();
-    // const buyTicket = async () => {
-    //   await contract.methods
-    //     .buyTicket(2)
-    //     .send({ from: this.connectedAccount, value: 100000000000000000 });
-    // };
   }
 
   cancel() {
@@ -115,7 +95,7 @@ export class UserBasicInformationComponent {
         lastName: this.fb.control(null, [Validators.required, Validators.maxLength(255)]),
         birthDay: this.fb.control(null),
         sex: this.fb.control(null),
-        notes: this.fb.control('Notes', [Validators.maxLength(5000)]),
+        notes: this.fb.control(null, [Validators.maxLength(5000)]),
       }),
       address: this.fb.group({
         id: this.fb.control(null),

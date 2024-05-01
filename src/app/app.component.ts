@@ -1,5 +1,5 @@
 import { StartupComponent } from './startup/startup.component';
-import { AfterViewInit, Component, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, delay, take } from 'rxjs';
 import { Router } from '@angular/router';
@@ -12,15 +12,31 @@ import { Web3Service } from './services/web3.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements AfterViewInit {
-  @ViewChild('startup') startupComponent!: StartupComponent;
+  @ViewChild('startup')
+  startupComponent!: StartupComponent;
 
   links = [
-    { href: '/', name: 'Dashboard', isActive: true, icon: 'assignment' },
-    { href: 'user-list', name: 'User list', isActive: true, icon: 'person' },
+    {
+      href: '/',
+      name: 'Dashboard',
+      isActive: true,
+      icon: 'assignment',
+    },
+    {
+      href: 'user-list',
+      name: 'User list',
+      isActive: true,
+      icon: 'person',
+    },
   ];
   isLoading = new BehaviorSubject(true);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: any, private router: Router, private snackBar: MatSnackBar, public web3Service: Web3Service) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: any,
+    private router: Router,
+    private snackBar: MatSnackBar,
+    public web3Service: Web3Service
+  ) {
     this.onActivate();
   }
 

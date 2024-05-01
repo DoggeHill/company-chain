@@ -34,8 +34,9 @@ export class UserIpfsEffects {
     mergeMap((action) => from(this.service.uploadDocument(action.file, action.address)).pipe(
       map(res => {
         if (res) {
-          console.log(res);
-          return Action.uploadDocumentSuccess({data: res});
+          // TODO: check what this return
+          //return Action.uploadDocumentSuccess({error: res});
+          return Action.uploadDocumentFailure({error: res});
         } else {
           return Action.uploadDocumentFailure({error: res});
         }

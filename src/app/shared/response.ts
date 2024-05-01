@@ -3,4 +3,5 @@ export declare class Response<T> {
 ​    results: T;
     meta: any;
     success: boolean;
+    responseMessage: string;
 }

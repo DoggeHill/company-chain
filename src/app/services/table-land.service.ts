@@ -2,9 +2,7 @@ import { Injectable } from "@angular/core";
 import { Database, Registry, Validator, helpers } from "@tableland/sdk";
 import { Wallet, getDefaultProvider } from "ethers";
 import { TableLandCredentials } from "../shared/tableland-credentials";
-import { TableSchema as TablelandSchema } from "../user-management/model/table-schema";
 
-// Create a database connection
 interface TableSchema {
     id: number;
     val: string;
@@ -18,7 +16,7 @@ export class TableLandService {
     constructor() {
     }
 
-    async connect() {
+    connect() {
         const privateKey = TableLandCredentials.TABLELAND_PRIVATE_KEY;
         const wallet = new Wallet(privateKey);
         const provider = getDefaultProvider(TableLandCredentials.TABLELAND_PROVIDER);
@@ -51,10 +49,7 @@ export class TableLandService {
             .prepare(`CREATE TABLE ${prefix} (id integer primary key not null, metamaskAddress text not null, firstName text not null, lastName text not null, birthDay text not null, sex integer, addressId integer, employeeId integer, notes text);`)
             .run();
         await create.txn?.wait();
-        // The table's `name` is in the format `{prefix}_{chainId}_{tableId}`
         const tableName = create.txn?.names[0] ?? "";
-        console.log(tableName);
-
         const execWrites = await window.db.batch([
             window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(1, "0x4449B512c20BA8eda6a0f1Ec4938Baca2E270439", "Patrik", "Hyll", "08/09/1999", 1, 1, 1, "boss"),
             window.db.prepare(`INSERT INTO ${tableName} (id, metamaskAddress, firstName, lastName, birthDay, sex, addressId, employeeId, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(2, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "Ľudovít", "Mitrenga", "08/09/1999", 2, 2, 2, "novy"),
@@ -71,11 +66,7 @@ export class TableLandService {
             .prepare(`CREATE TABLE ${prefix} (id integer primary key not null, country text not null, city text not null, street text not null, streetNo text, zipCode text);`)
             .run();
         await create.txn?.wait();
-
-        // The table's `name` is in the format `{prefix}_{chainId}_{tableId}`
         const tableName = create.txn?.names[0] ?? ""; // e.g., my_table_31337_2
-        console.log(tableName);
-
         const execWrites = await window.db.batch([
             window.db.prepare(`INSERT INTO ${tableName} (id, country, city, street, streetNo, zipCode) VALUES (?, ?, ?, ?, ?, ?);`).bind(1, "Slovenská republika", "Žilina", "Rázusová", "1025/18", "02401"),
             window.db.prepare(`INSERT INTO ${tableName} (id, country, city, street, streetNo, zipCode) VALUES (?, ?, ?, ?, ?, ?);`).bind(2, "Slovenská republika", "Žilina", "Rázusová", "1025/18", "02401"),
@@ -112,10 +103,7 @@ export class TableLandService {
             .prepare(`CREATE TABLE ${prefix} (id integer primary key not null, name text not null, capacity integer);`)
             .run();
         await create.txn?.wait();
-
         const tableName = create.txn?.names[0] ?? ""; // e.g., my_table_31337_2
-        console.log(tableName);
-
         const execWrites = await window.db.batch([
             window.db.prepare(`INSERT INTO ${tableName} (id, name, capacity) VALUES (?, ?, ?);`).bind(1, "Kriváň", 3),
             window.db.prepare(`INSERT INTO ${tableName} (id, name, capacity) VALUES (?, ?, ?);`).bind(2, "Gerlach", 2),
@@ -132,11 +120,7 @@ export class TableLandService {
             .prepare(`CREATE TABLE ${prefix} (id integer primary key not null, field text);`)
             .run();
         await create.txn?.wait();
-
-        // The table's `name` is in the format `{prefix}_{chainId}_{tableId}`
         const tableName = create.txn?.names[0] ?? ""; // e.g., my_table_31337_2
-        console.log(tableName);
-
         const execWrites = await window.db.batch([
             window.db.prepare(`INSERT INTO ${tableName} (id, field) VALUES (?, ?);`).bind(1, 'R&D'),
             window.db.prepare(`INSERT INTO ${tableName} (id, field) VALUES (?, ?);`).bind(2, 'Accounting'),

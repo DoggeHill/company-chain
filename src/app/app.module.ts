@@ -22,14 +22,13 @@ import {
 import { StartupComponent } from './startup/startup.component';
 import { CredentialsDialogComponent } from './startup/credentials-dialog/credentials-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 
 registerLocaleData(localeSk, 'sk');
 
 const CUSTOM_DATE_FORMATS: NgxMatDateFormats = {
   parse: {
-    dateInput: 'YYYY-MM-DDTHH:mm:ss',
+    dateInput: 'DD/MM/YYYY',
   },
   display: {
     dateInput: 'l, LTS',
@@ -66,11 +65,11 @@ export class AppModule {
 
   overrideDate() {
     Date.prototype.toJSON = function (key) {
-      return moment(this).format('YYYY-MM-DDTHH:mm:ss');
+      return moment(this).format('DD/MM/YYYY');
     };
     // @ts-ignore
     moment.fn.toJSON = function (key: string) {
-      return moment(this).format('YYYY-MM-DDTHH:mm:ss');
+      return moment(this).format('DD/MM/YYYY');
     };
   }
 }

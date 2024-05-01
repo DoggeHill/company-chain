@@ -1,6 +1,15 @@
 #toolbar {
     background: #2196f3;
     color: #dff;
+
+    .icon-links {
+        a {
+            color: beige;
+        }
+        button:first-child a {
+            color: red;
+        }
+    }
 }
 
 .drawer-container {

@@ -100,7 +100,7 @@ export class UserListComponent implements OnInit {
 
   deleteUser() {
     const dialogRef = this.dialog.open(DeleteDialog, {
-      data: { fileName: 'nieco' },
+      data: { name: this.gridApi.getSelectedRows()[0].firstName + " " + this.gridApi.getSelectedRows()[0].lastName},
     });
 
     dialogRef.afterClosed().subscribe((result) => {

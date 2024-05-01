@@ -28,13 +28,18 @@
           <mat-icon>menu</mat-icon>
         </button>
         <span>Company chain</span>
-        <span class="example-spacer"></span>
-        <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
-          <mat-icon>favorite</mat-icon>
-        </button>
-        <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
-          <mat-icon>share</mat-icon>
-        </button>
+        <div class="icon-links">
+          <button mat-icon-button class="example-icon favorite-icon" aria-label="GitHub favorite">
+            <a href="https://github.com/DoggeHill/company-chain">
+              <mat-icon>favorite</mat-icon>
+            </a>
+          </button>
+          <button mat-icon-button class="example-icon" aria-label="Share project">
+            <a href="https://github.com/DoggeHill/company-chain">
+              <mat-icon>share</mat-icon>
+            </a>
+          </button>
+        </div>
       </mat-toolbar>
     </p>
     <div class="app-content" *ngIf="!(isLoading | async)">

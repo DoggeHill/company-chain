@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
-// IPFS Client
-//import pinataSDK from '@pinata/sdk';
 import { ContractAddresses } from '../shared/contract-addresses';
-// Smart contracts
+import { PinataCredentials } from '../shared/pinata-credentials';
 import { AbiItem } from 'web3-utils';
 import IpfsContract from '../../assets/contracts/FileStorage.json';
-import { PinataCredentials } from '../shared/pinata-credentials';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { IpfsFile } from '../user-management/model/ipfs-file';
+import { Observable, switchMap } from 'rxjs';
+import { IpfsFile } from '../shared/ipfs-file';
 
 @Injectable({
   providedIn: 'root',
@@ -26,41 +23,20 @@ export class IpfsService {
     return this.http.get<{message: string}>('https://api.pinata.cloud/data/testAuthentication', {headers : headers});
   }
   
-  // Download configuration file
-  downloadJSONfile(cid: string): Observable<Object> {
+  downloadFile(cid: string): Observable<Object> {
     return this.http.get('https://gateway.pinata.cloud/ipfs/' + cid);
   }
 
-  async fileToReadableStream(file: File): Promise<ReadableStream<Uint8Array>> {
-    return new Promise<ReadableStream<Uint8Array>>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = function () {
-        const arrayBuffer = this.result as ArrayBuffer;
-        const uint8Array = new Uint8Array(arrayBuffer);
-        const readableStream = new ReadableStream<Uint8Array>({
-          start(controller) {
-            controller.enqueue(uint8Array);
-            controller.close();
-          },
-        });
-        resolve(readableStream);
-      };
-      reader.onerror = function () {
-        reject(reader.error);
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  }
-
-  async pinFileToIPFS(file: Blob, fileName: string, authorWalletId: string, address: string) {
-    let resData: any = '';
+  pinFileToIPFS(file: Blob, fileName: string, author: string, address: string) {
     const formData = new FormData();
+    const now = new Date().toISOString();
     formData.append('file', file);
 
     const pinataMetadata = JSON.stringify({
       name: fileName,
-      author: authorWalletId,
+      author: author,
       user: address,
+      date: now,
     });
     formData.append('pinataMetadata', pinataMetadata);
 
@@ -69,47 +45,30 @@ export class IpfsService {
     });
     formData.append('pinataOptions', pinataOptions);
 
-    // Angular http
-    try {
-      const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + PinataCredentials.PINATA_JWT,
-        },
-        body: formData,
-      });
-      resData = await res.json();
-      console.log(resData);
-
-      // Save hash to ETH
-      this.pinFileToEth(resData.IpfsHash, authorWalletId, address);
-    } catch (error) {
-      console.error(error);
-    }
-    return resData;
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${PinataCredentials.PINATA_JWT}`
+    });
+    
+    return this.http.post('https://api.pinata.cloud/pinning/pinFileToIPFS', formData, {headers : headers}).pipe(
+      switchMap((res: any) => {
+        // Save hash to ETH
+        return this.pinFileToEth(res.IpfsHash, author, address, fileName, now);
+      })
+    )
   }
 
-  async pinFileToEth(cid: string, authorWalletId: string, address: string) {
-    console.info('pinning to etherum');
+  pinFileToEth(cid: string, authorAddress: string, address: string, fileName: string, uploadDate: string) {
     const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
-    const saveFile = async () => {
-      const res = await contract.methods.storeCIDAndUserAddress(cid, address).send({ from: authorWalletId });
-      console.log(res);
-    };
-    saveFile();
+    return contract.methods.storeCIDAndUserAddress(cid, address, authorAddress, fileName, uploadDate).send({ from: authorAddress });
   }
 
-  async listUsersDocuments(address: string): Promise<IpfsFile[]> {
+  listUsersDocuments(address: string): Promise<IpfsFile[]> {
     const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
-    return await contract.methods.getUserFiles(address).call();
+    return contract.methods.getUserFiles(address).call();
   }
 
-  async listAllFiles() {
+  listAllFiles() {
     const contract = new window.web3.eth.Contract(IpfsContract.abi as AbiItem[], ContractAddresses.IPFS_CONTRACT);
-    return await contract.methods.getAllFiles().call();
-  }
-
-  listUsersDocumentsWithMetadata(address: string) {
-
+    return contract.methods.getAllFiles().call();
   }
 }
