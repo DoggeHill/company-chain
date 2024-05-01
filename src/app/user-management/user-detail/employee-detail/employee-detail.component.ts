@@ -49,7 +49,7 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
         filter((e) => !!e),
         switchMap((user) => {
           this.store.dispatch(Actions.findEmployee({ id: user?.employeeId! }));
-          return from(this.contract.methods.isMinter().call());
+          return from(this.contract.methods.isMinter().send({from: user?.metamaskAddress}));
         })
       )
       .subscribe((minter) => {

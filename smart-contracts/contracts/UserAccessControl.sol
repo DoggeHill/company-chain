@@ -35,8 +35,8 @@ contract UserAccessControl is Ownable, AccessControl {
   /**
    * @dev Test wheter use has a `MINTER_ROLE`.
    */
-  function isMinter() public view returns (bool canActivate) {
-    if (!hasRole(MINTER_ROLE, msg.sender)) return false;
+  function isMinter(address user) public view returns (bool canActivate) {
+    if (!hasRole(MINTER_ROLE, user)) return false;
     return true;
   }
 

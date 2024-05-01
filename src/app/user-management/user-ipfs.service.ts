@@ -18,8 +18,6 @@ export class UserIpfsService {
   }
 
   uploadDocument(file: File, address: string) {
-    const reader = new FileReader();
-    const blob = new Blob([reader.result as any], { type: file.type });
-    return this.ipfsService.pinFileToIPFS(blob, file.name, this.web3Service.getConnectedAccount(), address);
+    return this.ipfsService.pinFileToIPFS(file, file.name, this.web3Service.getConnectedAccount(), address);
   }
 }

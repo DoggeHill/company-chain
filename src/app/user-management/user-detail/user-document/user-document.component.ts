@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
-import { MatDialog, MatDialogRef, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent } from '@angular/material/dialog';
+import { MatDialog} from '@angular/material/dialog';
 import { DeleteDialog } from '../../../shared/delete-dialog/delete-dialog';
 import { IpfsService } from '../../../services/ipfs.service';
 import * as Reducer from '../../store/user.reducer';
@@ -47,13 +47,6 @@ export class UserDocumentComponent {
     });
   }
 
-  delete() {
-    let selectedRow: any = this.grid.api.getSelectedRows()[0];
-    let dialogRef = this.dialog.open(DeleteDialog, {
-      data: { filename: selectedRow.name },
-    });
-  }
-
   cancel() {
     this.editMode = false;
     this.formGroup?.disable();
@@ -71,8 +64,6 @@ export class UserDocumentComponent {
       .subscribe((r) => {
         console.log(r);
         this.address = r!.metamaskAddress;
-        // this.ipfsService.listAllFiles().then((res) => console.log(res));
-        // this.ipfsService.listUsersDocuments(r!.metamaskAddress).then((res) => console.log(res));
         this.store.dispatch(Actions.listDocuments({ address: r!.metamaskAddress }));
       });
 
@@ -80,18 +71,16 @@ export class UserDocumentComponent {
       .select(Selectors.selectDocuments)
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
-        this.rowData = r.flatMap((e) => {return {cid: e.cid, userAddress: e.userAddress}})
+        this.rowData = r.flatMap((e) => {return {cid: e.cid, userAddress: e.userAddress, authorAddress: e.authorAddress, fileName: e.fileName, uploadDate: e.uploadDate }})
       });
   }
 
   rowDoubleClicked(row: any) {
-    this.ipfsService.downloadFile(row.cid).pipe(takeUntil(this.destroy$)).subscribe(r => {
-      console.log(r);
-    });
+    this.ipfsService.downloadPinataFile(row.data.cid, row.data.fileName);
   }
 
   // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [{ field: 'cid' }, { field: 'userAddress', width: 700 }];
+  colDefs: ColDef[] = [{ field: 'fileName' }, { field: 'cid' }, { field: 'uploadDate' }, { field: 'userAddress', width: 700 }, {field: 'authorAddress', width: 700}];
 
   async onFileSelected(event: any) {
     const file: File = event.target.files[0];

@@ -22,6 +22,17 @@ export class IpfsService {
     })
     return this.http.get<{message: string}>('https://api.pinata.cloud/data/testAuthentication', {headers : headers});
   }
+
+  downloadPinataFile(cid: string, fileName: string) {
+    const link = document.createElement('a');
+    link.href = 'https://gateway.pinata.cloud/ipfs/' + cid;
+    link.target = "_blank";
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+  }
   
   downloadFile(cid: string): Observable<Object> {
     return this.http.get('https://gateway.pinata.cloud/ipfs/' + cid);

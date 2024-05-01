@@ -189,7 +189,7 @@ export class StartupComponent implements OnDestroy {
                       this.progress(Steps.tableland_factory_init);
                       return from(this.tableLandService.isFactoryDone()).pipe(
                         switchMap(value => {
-                          if (value?.length > 0) {
+                          if (value?.length > 1) {
                             return of(true);
                           } else {
                             return from(this.tableLandService.factory()).pipe(

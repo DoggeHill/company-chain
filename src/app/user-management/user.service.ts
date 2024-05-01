@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, delay, from, map, take } from 'rxjs';
+import { Observable, from, map } from 'rxjs';
 import { Address, User } from './model/user';
 import { TableSchema } from '../shared/table-schema';
 import { Employee } from './model/employee';
@@ -92,7 +92,6 @@ export class UserService {
         ),
       ])
     ).pipe(
-      delay(500),
       map((result: any) => {
         const response: Response<number> = {
           results: user.id,
