@@ -4,6 +4,7 @@ import { Address, User } from './model/user';
 import { TableSchema } from '../shared/table-schema';
 import { Employee } from './model/employee';
 import { Response } from '../shared/response';
+import { TableLandCredentials } from '../shared/tableland-credentials';
 
 @Injectable({
   providedIn: 'root',
@@ -145,21 +146,19 @@ export class UserService {
   createUser(dto: User): Observable<Response<User>> {
     return from(
       window.db
-        .prepare(
-          `INSERT INTO users_31337_22 (id, name, surname, date_of_birth, sex, addressId) VALUES (?, ?, ?, ?, ?, ?);`
-        )
-        .bind(dto.id, dto.firstName, dto.lastName, dto.birthDay, dto.sex, dto.address)
-        .run()
+        .batch([
+          window.db.prepare(`INSERT INTO ${TableSchema.address} (id, country, city, street, streetNo, zipCode) VALUES (?, ?, ?, ?, ?, ?);`).bind(TableLandCredentials.ID_COUNT, dto.address?.country, dto.address?.city, dto.address?.street, dto.address?.streetNo, dto.address?.zipCode),
+          window.db.prepare(`INSERT INTO ${TableSchema.employee} (id, departmentId, officeId) VALUES (?, ?, ?);`).bind(TableLandCredentials.ID_COUNT, 1, 1),
+          window.db.prepare(`INSERT INTO ${TableSchema.user} (id, firstName, lastName, birthDay, sex, addressId, employeeId, notes, metamaskAddress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).bind(TableLandCredentials.ID_COUNT, dto.firstName, dto.lastName, dto.birthDay, dto.sex, TableLandCredentials.ID_COUNT, TableLandCredentials.ID_COUNT, dto.notes, dto.metamaskAddress),
+        ])
     ).pipe(
-      map((rows) => {
-        let newRows = rows as unknown as any;
-        let data = newRows.results[0];
+      map((data: any) => {
         const response: Response<User> = {
-          results: data as User,
-          success: data.success,
-          meta: data.meta,
-          error: data.error,
-          responseMessage: 'user fetched',
+          results: {id: TableLandCredentials.ID_COUNT++} as User,
+          success: data[0].success,
+          meta: data[0].meta,
+          error: data[0].error,
+          responseMessage: 'user created',
         };
         return response;
       })
@@ -192,8 +191,12 @@ export class UserService {
       window.db.batch([
         window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.user} TO '${address}'`),
         window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.address} TO '${address}'`),
-        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.department} TO '${address}'`),
-        window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.employee} TO '${address}'`),
+        window.db.prepare(
+          `GRANT INSERT, UPDATE, DELETE ON ${TableSchema.department} TO '${address}'`
+        ),
+        window.db.prepare(
+          `GRANT INSERT, UPDATE, DELETE ON ${TableSchema.employee} TO '${address}'`
+        ),
         window.db.prepare(`GRANT INSERT, UPDATE, DELETE ON ${TableSchema.office} TO '${address}'`),
       ])
     ).pipe(
@@ -214,10 +217,18 @@ export class UserService {
     return from(
       window.db.batch([
         window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.user} FROM '${address}'`),
-        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.address} FROM '${address}'`),
-        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.department} FROM '${address}'`),
-        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.employee} FROM '${address}'`),
-        window.db.prepare(`REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.office} FROM '${address}'`),
+        window.db.prepare(
+          `REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.address} FROM '${address}'`
+        ),
+        window.db.prepare(
+          `REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.department} FROM '${address}'`
+        ),
+        window.db.prepare(
+          `REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.employee} FROM '${address}'`
+        ),
+        window.db.prepare(
+          `REVOKE INSERT, UPDATE, DELETE ON ${TableSchema.office} FROM '${address}'`
+        ),
       ])
     ).pipe(
       map((result: any) => {

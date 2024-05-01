@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import * as Reducer from '../../store/user.reducer';
@@ -37,7 +36,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private activatedRoute: ActivatedRoute,
     private store: Store<Reducer.UserState>,
   ) {
   }

@@ -29,13 +29,16 @@ export class UserBasicInformationComponent {
     private fb: FormBuilder,
     private store: Store<Reducer.UserState>,
     private snackBar: MatSnackBar,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
   ) {
     this.createFormGroup();
 
     this.store
       .select(Selectors.selectUser)
-      .pipe(takeUntil(this.destroy$), filter((r) => !!r))
+      .pipe(
+        takeUntil(this.destroy$),
+        filter((r) => !!r)
+      )
       .subscribe((r) => {
         let data = JSON.parse(JSON.stringify(r));
         data.birthDay = moment(r?.birthDay, 'DD/MM/YYYY').toDate();
@@ -52,7 +55,6 @@ export class UserBasicInformationComponent {
       });
   }
 
- 
   triggerResize() {
     // Wait for changes to be applied, then trigger textarea resize.
     this._ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
@@ -61,10 +63,12 @@ export class UserBasicInformationComponent {
   edit() {
     this.editMode = true;
     this.formGroup?.enable();
-    this.formGroup?.get('personalDetail.metamaskAddress')?.disable();
+    if(this.formGroup?.get('personalDetail.id')?.value) this.formGroup?.get('personalDetail.metamaskAddress')?.disable();
   }
 
-  delete() {this.snackBar.open('Delete fro User List!', 'Close', {duration: 500})}
+  delete() {
+    this.snackBar.open('Delete fro User List!', 'Close', { duration: 500 });
+  }
 
   save() {
     if (this.formGroup?.invalid) {
@@ -76,11 +80,7 @@ export class UserBasicInformationComponent {
     let user: User = JSON.parse(JSON.stringify(this.formGroup?.getRawValue().personalDetail));
     let address: Address = JSON.parse(JSON.stringify(this.formGroup?.getRawValue().address));
     user.address = address;
-    if(user.id) {
-      this.store.dispatch(Actions.editUser({ data: user }));
-    } else {
-      this.store.dispatch(Actions.cre({ data: user }));
-    }
+    this.store.dispatch(Actions.editUser({ data: user }));
     this.editMode = false;
     this.formGroup?.disable();
   }

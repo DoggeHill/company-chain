@@ -1,4 +1,4 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as Reducer from '../store/user.reducer';
@@ -20,7 +20,7 @@ export class UserDetailComponent implements OnInit {
   address = new BehaviorSubject('');
   name = new BehaviorSubject('');
 
-  constructor(private activatedRoute: ActivatedRoute, private store: Store<Reducer.UserState>) {
+  constructor(private activatedRoute: ActivatedRoute, private store: Store<Reducer.UserState>, private router: Router) {
     this.activatedRoute.params.subscribe((params) => {
       if (params['id'] > 0) {
         this.store.dispatch(Actions.findUser({ id: params['id'] }));
@@ -31,6 +31,9 @@ export class UserDetailComponent implements OnInit {
       .select(Selectors.selectUser)
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
+        if(this.activatedRoute.snapshot.params['testId'] != r?.id) {
+          this.router.navigate(['user-detail', r!.id]);
+        }
         this.address.next(
           r?.metamaskAddress ? r.metamaskAddress.substr(r.metamaskAddress.length - 8) : ''
         );
@@ -52,17 +55,16 @@ export class UserDetailComponent implements OnInit {
         if (result.input) {
           // Regex pattern update
           let regex = /7570.*?(000)/;
-          let regexDelete = /2464.*?(000)/;
 
           // Find matches
           let matches = result.input.match(regex);
-          if(matches == null) {
-            matches = result.input.match(regexDelete);
+          let res = "";
+          if(matches != null) {
+             res = matches[0].replace('000', '').replace('7570', '0x7570');
           }
-          let res = matches[0].replace('000', '').replace('7570', '0x7570').replace('2464', '0x2464');
 
           let history = {
-            transaction: window.web3.utils.hexToUtf8(res),
+            transaction: res == "" ? "" : window.web3.utils.hexToUtf8(res),
             gas: result.gas,
             author: result.from,
           };

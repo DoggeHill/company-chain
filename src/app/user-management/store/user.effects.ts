@@ -69,32 +69,59 @@ export class UserEffect {
     this.actions$.pipe(
       ofType(Action.editUser),
       delay(1000),
-      mergeMap((action) =>
-        this.service.editUser(action.data).pipe(
-          delay(1000),
-          filter((res) => !!res),
-          switchMap((res) => {
-            if (res.success) {
-              return this.service.findUser(res.results).pipe(
-                delay(300),
-                map((res) => Action.editUserSuccess({ data: res.results })),
-                catchError((err) => of(Action.editUserFailure({ error: err })))
-              );
-            } else {
-              this.snackBar.open('Error' + res.responseMessage, 'Close', {
+      switchMap((action) => {
+        if (action.data.id) {
+           return this.service.editUser(action.data).pipe(
+            delay(1000),
+            filter((res) => !!res),
+            switchMap((res) => {
+              if (res.success) {
+                return this.service.findUser(res.results).pipe(
+                  delay(300),
+                  map((res) => Action.editUserSuccess({ data: res.results })),
+                  catchError((err) => of(Action.editUserFailure({ error: err })))
+                );
+              } else {
+                this.snackBar.open('Error' + res.responseMessage, 'Close', {
+                  duration: 2000,
+                });
+                return of(Action.editUserFailure({ error: res.responseMessage }));
+              }
+            }),
+            catchError((err) => {
+              this.snackBar.open('Error' + err, 'Close', {
                 duration: 2000,
               });
-              return of(Action.editUserFailure({ error: res.responseMessage }));
-            }
-          }),
-          catchError((err) => {
-            this.snackBar.open('Error' + err, 'Close', {
-              duration: 2000,
-            });
-            return of(Action.editUserFailure({ error: err }));
-          })
-        )
-      )
+              return of(Action.editUserFailure({ error: err }));
+            })
+          );
+        } else {
+          return this.service.createUser(action.data).pipe(
+            delay(1000),
+            filter((res) => !!res),
+            switchMap((res) => {
+              if (res.success) {
+                return this.service.findUser(res.results.id).pipe(
+                  delay(300),
+                  map((res) => Action.editUserSuccess({ data: res.results })),
+                  catchError((err) => of(Action.editUserFailure({ error: err })))
+                );
+              } else {
+                this.snackBar.open('Error' + res.responseMessage, 'Close', {
+                  duration: 2000,
+                });
+                return of(Action.editUserFailure({ error: res.responseMessage }));
+              }
+            }),
+            catchError((err) => {
+              this.snackBar.open('Error' + err, 'Close', {
+                duration: 2000,
+              });
+              return of(Action.editUserFailure({ error: err }));
+            })
+          );
+        }
+      })
     )
   );
 
