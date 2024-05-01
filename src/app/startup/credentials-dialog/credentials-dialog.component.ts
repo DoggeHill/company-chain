@@ -23,7 +23,7 @@ export class CredentialsDialogComponent implements OnInit {
 
   createFormGroup() {
     this.formGroup = this.fb.group({
-      pinataConfigCid: this.fb.control('Qmdkenxeny16LTESbc3r8GMc2D24kiyjtVgZrmNtzhohTk', [Validators.required, Validators.maxLength(100)]),
+      pinataConfigCid: this.fb.control('QmbG9G7Ymev5NCD8fLiPzWkKEpFMg9fFsaiGRRnguDMKmX', [Validators.required, Validators.maxLength(100)]),
     });
     this.formGroup.enable();
   }

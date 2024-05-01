@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
       ContractAddresses.USER_ACCESS_CONTRACT
     );
     contract.methods
-      .grantMinterRole(ContractAddresses.local)
+      .grantMinterRole(ContractAddresses.USER_ACCESS_CONTRACT_DEPLOYER_ADDRESS)
       .send({ from: this.web3.getConnectedAccount() });
   }
 
@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
     if (window.web3 === undefined || window.web3.eth === undefined) return of(false);
     const contract = new window.web3.eth.Contract(
       UserAccessControl.abi as AbiItem[],
-      ContractAddresses.local
+      ContractAddresses.USER_ACCESS_CONTRACT
     );
     const roleHash = window.web3.utils.keccak256("MINTER_ROLE");
     return from(contract.methods.hasRole(roleHash, this.web3.getConnectedAccount()).call({from: this.web3.getConnectedAccount()})).pipe(

@@ -114,43 +114,43 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
         this.contract.methods
           .grantMinterRole(this.user!.metamaskAddress)
           .send({ from: this.metamaskService.getConnectedAccount() });
-        this.userService
-          .grantAccessToAllTables(this.user!.metamaskAddress)
-          .pipe(takeUntil(this._destroy$))
-          .subscribe((res) => {
-            if (res.success) {
-              this.snackBar.open('Access granted', 'Close', {
-                duration: 2000,
-              });
-            }
-          }),
-          catchError((err) => {
-            this.snackBar.open('Error' + err, 'Close', {
-              duration: 2000,
-            });
-            return of(false);
-          });
+        // this.userService
+        //   .grantAccessToAllTables(this.user!.metamaskAddress)
+        //   .pipe(takeUntil(this._destroy$))
+        //   .subscribe((res) => {
+        //     if (res.success) {
+        //       this.snackBar.open('Access granted', 'Close', {
+        //         duration: 2000,
+        //       });
+        //     }
+        //   }),
+        //   catchError((err) => {
+        //     this.snackBar.open('Error' + err, 'Close', {
+        //       duration: 2000,
+        //     });
+        //     return of(false);
+        //   });
       } else {
         this.contract.methods
           .revokeMinterRole(this.user!.metamaskAddress)
           .send({ from: this.metamaskService.getConnectedAccount() });
 
-        this.userService
-          .revokeAccessFromAllTables(this.user!.metamaskAddress)
-          .pipe(takeUntil(this._destroy$))
-          .subscribe((res) => {
-            if (res.success) {
-              this.snackBar.open('Access revoked', 'Close', {
-                duration: 2000,
-              });
-            }
-          }),
-          catchError((err) => {
-            this.snackBar.open('Error' + err, 'Close', {
-              duration: 2000,
-            });
-            return of(false);
-          });
+        //   this.userService
+        //     .revokeAccessFromAllTables(this.user!.metamaskAddress)
+        //     .pipe(takeUntil(this._destroy$))
+        //     .subscribe((res) => {
+        //       if (res.success) {
+        //         this.snackBar.open('Access revoked', 'Close', {
+        //           duration: 2000,
+        //         });
+        //       }
+        //     }),
+        //     catchError((err) => {
+        //       this.snackBar.open('Error' + err, 'Close', {
+        //         duration: 2000,
+        //       });
+        //       return of(false);
+        //     });
       }
     }
     this.store.dispatch(
